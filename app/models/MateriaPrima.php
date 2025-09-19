@@ -9,6 +9,13 @@ class MateriaPrima extends Model {
     protected $table = 'materias_primas';
     
     /**
+     * Obtener materias primas activas
+     */
+    public function getActivos() {
+        return $this->findBy('estado', 'activo');
+    }
+    
+    /**
      * Obtener materias primas activas con proveedor
      */
     public function getConProveedor() {
@@ -90,6 +97,26 @@ class MateriaPrima extends Model {
                 WHERE i.tipo = 'materia_prima' AND i.estado = 'disponible'
                 GROUP BY i.ubicacion, mp.id
                 ORDER BY i.ubicacion, mp.nombre";
+        return $this->query($sql);
+    }
+    
+    /**
+     * Obtener inventario completo de materias primas
+     */
+    public function getInventarioCompleto() {
+        $sql = "SELECT mp.*, p.nombre as proveedor_nombre,
+                       mp.stock_actual,
+                       mp.stock_minimo,
+                       mp.stock_maximo,
+                       CASE 
+                           WHEN mp.stock_actual <= mp.stock_minimo THEN 'bajo'
+                           WHEN mp.stock_actual >= mp.stock_maximo THEN 'alto'
+                           ELSE 'normal'
+                       END as estado_inventario
+                FROM {$this->table} mp
+                LEFT JOIN proveedores p ON mp.proveedor_principal_id = p.id
+                WHERE mp.estado = 'activo'
+                ORDER BY mp.tipo, mp.nombre";
         return $this->query($sql);
     }
 }
