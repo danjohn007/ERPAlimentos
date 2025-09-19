@@ -96,12 +96,26 @@ $router->addRoute('inventario/movimientos', 'Inventario', 'movimientos');
 
 $router->addRoute('ventas', 'Ventas', 'index');
 $router->addRoute('ventas/clientes', 'Ventas', 'clientes');
+$router->addRoute('ventas/nuevo_cliente', 'Ventas', 'nuevo_cliente');
+$router->addRoute('ventas/ver_cliente/(\d+)', 'Ventas', 'ver_cliente');
+$router->addRoute('ventas/editar_cliente/(\d+)', 'Ventas', 'editar_cliente');
 $router->addRoute('ventas/ordenes', 'Ventas', 'ordenes');
+$router->addRoute('ventas/nueva_orden', 'Ventas', 'nueva_orden');
+$router->addRoute('ventas/ver_orden/(\d+)', 'Ventas', 'ver_orden');
+$router->addRoute('ventas/cambiar_estado_orden', 'Ventas', 'cambiar_estado_orden');
+$router->addRoute('ventas/cancelar_orden', 'Ventas', 'cancelar_orden');
 $router->addRoute('ventas/facturacion', 'Ventas', 'facturacion');
 
 $router->addRoute('compras', 'Compras', 'index');
 $router->addRoute('compras/ordenes', 'Compras', 'ordenes');
+$router->addRoute('compras/nueva_orden', 'Compras', 'nueva_orden');
+$router->addRoute('compras/ver_orden/(\d+)', 'Compras', 'ver_orden');
 $router->addRoute('compras/recepcion', 'Compras', 'recepcion');
+$router->addRoute('compras/proveedores', 'Compras', 'proveedores');
+$router->addRoute('compras/nuevo_proveedor', 'Compras', 'nuevo_proveedor');
+$router->addRoute('compras/inventario_materias_primas', 'Compras', 'inventario_materias_primas');
+$router->addRoute('compras/reportes', 'Compras', 'reportes');
+$router->addRoute('compras/alertas_inventario', 'Compras', 'alertas_inventario');
 
 $router->addRoute('finanzas', 'Finanzas', 'index');
 $router->addRoute('finanzas/contabilidad', 'Finanzas', 'contabilidad');

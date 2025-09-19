@@ -96,9 +96,9 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-2">
-                            <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#modalNuevaOrden">
+                            <a href="<?= $this->url('ventas/nueva_orden') ?>" class="btn btn-primary btn-block">
                                 <i class="fas fa-plus"></i> Nueva Orden
-                            </button>
+                            </a>
                         </div>
                         <div class="col-md-3 mb-2">
                             <a href="<?= $this->url('ventas/clientes') ?>" class="btn btn-info btn-block">

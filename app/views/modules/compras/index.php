@@ -81,29 +81,67 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-3 text-center mb-3">
+                                <div class="col-md-2 text-center mb-3">
                                     <a href="/compras/nueva_orden" class="btn btn-primary btn-lg btn-block">
                                         <i class="fas fa-plus"></i><br>
                                         Nueva Orden de Compra
                                     </a>
                                 </div>
-                                <div class="col-md-3 text-center mb-3">
+                                <div class="col-md-2 text-center mb-3">
                                     <a href="/compras/ordenes" class="btn btn-info btn-lg btn-block">
                                         <i class="fas fa-list"></i><br>
                                         Ver Todas las Órdenes
                                     </a>
                                 </div>
-                                <div class="col-md-3 text-center mb-3">
+                                <div class="col-md-2 text-center mb-3">
                                     <a href="/compras/recepcion" class="btn btn-success btn-lg btn-block">
                                         <i class="fas fa-inbox"></i><br>
                                         Recepción de Mercancía
                                     </a>
                                 </div>
-                                <div class="col-md-3 text-center mb-3">
+                                <div class="col-md-2 text-center mb-3">
                                     <a href="/compras/proveedores" class="btn btn-secondary btn-lg btn-block">
                                         <i class="fas fa-building"></i><br>
                                         Gestión de Proveedores
                                     </a>
+                                </div>
+                                <div class="col-md-2 text-center mb-3">
+                                    <a href="/compras/inventario_materias_primas" class="btn btn-warning btn-lg btn-block">
+                                        <i class="fas fa-boxes"></i><br>
+                                        Inventario de Materias
+                                    </a>
+                                </div>
+                                <div class="col-md-2 text-center mb-3">
+                                    <a href="/compras/reportes" class="btn btn-dark btn-lg btn-block">
+                                        <i class="fas fa-chart-bar"></i><br>
+                                        Reportes de Compras
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 text-center mb-3">
+                                    <a href="/compras/nuevo_proveedor" class="btn btn-outline-primary btn-lg btn-block">
+                                        <i class="fas fa-user-plus"></i><br>
+                                        Nuevo Proveedor
+                                    </a>
+                                </div>
+                                <div class="col-md-3 text-center mb-3">
+                                    <button class="btn btn-outline-success btn-lg btn-block" onclick="generarRequisicion()">
+                                        <i class="fas fa-file-export"></i><br>
+                                        Generar Requisición
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center mb-3">
+                                    <button class="btn btn-outline-info btn-lg btn-block" onclick="consultarPrecios()">
+                                        <i class="fas fa-search-dollar"></i><br>
+                                        Consultar Precios
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center mb-3">
+                                    <button class="btn btn-outline-warning btn-lg btn-block" onclick="alertasInventario()">
+                                        <i class="fas fa-exclamation-triangle"></i><br>
+                                        Alertas de Inventario
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -196,5 +234,38 @@
         </div>
     </div>
 </div>
+
+<script>
+function generarRequisicion() {
+    alert('Funcionalidad de Generar Requisición: Esta función permitirá crear automáticamente órdenes de compra basadas en niveles mínimos de inventario.');
+    // En una implementación completa, esto abriría un modal o redireccionaría a una página específica
+}
+
+function consultarPrecios() {
+    alert('Funcionalidad de Consultar Precios: Esta función permitirá comparar precios de diferentes proveedores para una materia prima específica.');
+    // En una implementación completa, esto abriría un modal de búsqueda
+}
+
+function alertasInventario() {
+    // Obtener alertas de inventario vía AJAX
+    fetch('/compras/alertas_inventario')
+        .then(response => response.json())
+        .then(data => {
+            if (data.alertas && data.alertas.length > 0) {
+                let mensaje = 'Alertas de Inventario:\n\n';
+                data.alertas.forEach(alerta => {
+                    mensaje += `• ${alerta.materia_prima}: Stock actual ${alerta.stock_actual}, Mínimo ${alerta.stock_minimo}\n`;
+                });
+                alert(mensaje);
+            } else {
+                alert('¡Excelente! No hay alertas de inventario en este momento.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('No se pudieron cargar las alertas de inventario.');
+        });
+}
+</script>
 
 <?php include_once VIEWS_PATH . "layouts/footer.php"; ?>

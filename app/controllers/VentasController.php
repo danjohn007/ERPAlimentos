@@ -174,6 +174,73 @@ class VentasController extends Controller {
         ]);
     }
     
+    public function cambiar_estado_orden() {
+        $this->requireAuth();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        try {
+            $ordenModel = new OrdenVenta();
+            $ordenId = $input['orden_id'];
+            $nuevoEstado = $input['estado'];
+            
+            $orden = $ordenModel->getById($ordenId);
+            if (!$orden) {
+                echo json_encode(['success' => false, 'message' => 'Orden no encontrada']);
+                return;
+            }
+            
+            $ordenModel->actualizarEstado($ordenId, $nuevoEstado);
+            
+            echo json_encode(['success' => true, 'message' => 'Estado actualizado correctamente']);
+            
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    public function cancelar_orden() {
+        $this->requireAuth();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        try {
+            $ordenModel = new OrdenVenta();
+            $ordenId = $input['orden_id'];
+            $motivo = $input['motivo'];
+            
+            $orden = $ordenModel->getById($ordenId);
+            if (!$orden) {
+                echo json_encode(['success' => false, 'message' => 'Orden no encontrada']);
+                return;
+            }
+            
+            $observaciones = $orden['observaciones'] . "\nCancelada: " . $motivo . " (Usuario: " . $_SESSION['user_name'] . ", Fecha: " . date('Y-m-d H:i:s') . ")";
+            
+            $ordenModel->update($ordenId, [
+                'estado' => 'cancelado',
+                'observaciones' => $observaciones
+            ]);
+            
+            echo json_encode(['success' => true, 'message' => 'Orden cancelada correctamente']);
+            
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    
     private function procesarCliente($id = null) {
         try {
             $clienteModel = new Cliente();
