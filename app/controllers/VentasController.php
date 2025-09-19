@@ -10,33 +10,42 @@ class VentasController extends Controller {
     public function index() {
         $this->requireAuth();
         
+        $ordenModel = new OrdenVenta();
+        $clienteModel = new Cliente();
+        
+        $ordenesPendientes = $ordenModel->getByEstado('pendiente');
+        $ordenesProceso = $ordenModel->getByEstado('proceso');
+        $clientesActivos = $clienteModel->getActivos();
+        
         $this->view->render('modules/ventas/index', [
             'title' => 'Módulo de Ventas',
-            'message' => 'Este módulo está en desarrollo. Pronto podrás gestionar las ventas.',
-            'features' => [
-                'Gestión de clientes',
-                'Órdenes de venta',
-                'Facturación electrónica',
-                'Seguimiento de cobranza'
-            ]
+            'ordenes_pendientes' => $ordenesPendientes,
+            'ordenes_proceso' => $ordenesProceso,
+            'clientes_activos' => $clientesActivos
         ]);
     }
     
     public function clientes() {
         $this->requireAuth();
         
+        $clienteModel = new Cliente();
+        $clientes = $clienteModel->getActivos();
+        
         $this->view->render('modules/ventas/clientes', [
             'title' => 'Gestión de Clientes',
-            'message' => 'Módulo de clientes en desarrollo.'
+            'clientes' => $clientes
         ]);
     }
     
     public function ordenes() {
         $this->requireAuth();
         
+        $ordenModel = new OrdenVenta();
+        $ordenes = $ordenModel->getOrdenesConCliente();
+        
         $this->view->render('modules/ventas/ordenes', [
             'title' => 'Órdenes de Venta',
-            'message' => 'Gestión de órdenes en desarrollo.'
+            'ordenes' => $ordenes
         ]);
     }
     

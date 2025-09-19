@@ -77,6 +77,7 @@ $router->addRoute('dashboard', 'Dashboard', 'index');
 // Módulos principales
 $router->addRoute('produccion', 'Produccion', 'index');
 $router->addRoute('produccion/recetas', 'Produccion', 'recetas');
+$router->addRoute('produccion/recetas/crear', 'Produccion', 'crearReceta');
 $router->addRoute('produccion/lotes', 'Produccion', 'lotes');
 $router->addRoute('produccion/lotes/crear', 'Produccion', 'crearLote');
 $router->addRoute('produccion/lotes/ver/(\d+)', 'Produccion', 'verLote');
