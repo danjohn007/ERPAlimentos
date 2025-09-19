@@ -123,6 +123,10 @@
                                 <hr>
                                 
                                 <div class="d-grid">
+                                    <input type="hidden" name="subtotal" id="hidden-subtotal" value="0">
+                                    <input type="hidden" name="descuento_total" id="hidden-descuento" value="0">
+                                    <input type="hidden" name="impuestos" id="hidden-iva" value="0">
+                                    <input type="hidden" name="total" id="hidden-total" value="0">
                                     <button type="submit" class="btn btn-success btn-lg">
                                         <i class="fas fa-save"></i> Crear Orden
                                     </button>
@@ -263,17 +267,24 @@ function calcularTotales() {
     });
     
     // Aplicar descuento del cliente
-    const descuentoCliente = subtotal * (descuentoCliente / 100);
-    descuentoTotal += descuentoCliente;
+    const descuentoClienteAplicado = subtotal * (descuentoCliente / 100);
+    descuentoTotal += descuentoClienteAplicado;
     
     const subtotalFinal = subtotal - descuentoTotal;
     const iva = subtotalFinal * 0.16;
     const total = subtotalFinal + iva;
     
+    // Actualizar display
     document.getElementById('resumen-subtotal').textContent = '$' + subtotal.toFixed(2);
     document.getElementById('resumen-descuento').textContent = '$' + descuentoTotal.toFixed(2);
     document.getElementById('resumen-iva').textContent = '$' + iva.toFixed(2);
     document.getElementById('resumen-total').textContent = '$' + total.toFixed(2);
+    
+    // Actualizar campos ocultos
+    document.getElementById('hidden-subtotal').value = subtotal.toFixed(2);
+    document.getElementById('hidden-descuento').value = descuentoTotal.toFixed(2);
+    document.getElementById('hidden-iva').value = iva.toFixed(2);
+    document.getElementById('hidden-total').value = total.toFixed(2);
 }
 
 // Event listener para selección de cliente

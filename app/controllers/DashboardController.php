@@ -61,9 +61,10 @@ class DashboardController extends Controller {
             // Ventas del mes
             $ventasMes = $db->queryOne("
                 SELECT COUNT(*) as total_ordenes, SUM(total) as total_ventas
-                FROM ventas 
-                WHERE MONTH(fecha_venta) = MONTH(CURDATE()) 
-                AND YEAR(fecha_venta) = YEAR(CURDATE())
+                FROM ordenes_venta 
+                WHERE MONTH(fecha_orden) = MONTH(CURDATE()) 
+                AND YEAR(fecha_orden) = YEAR(CURDATE())
+                AND estado != 'cancelado'
             ") ?? $ventasMes;
             
         } catch (Exception $e) {

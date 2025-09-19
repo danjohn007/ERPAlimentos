@@ -299,18 +299,23 @@ class VentasController extends Controller {
                 'estado' => 'pendiente'
             ];
             
-            $ordenId = $ordenModel->insert($datosOrden);
+            $ordenId = $ordenModel->create($datosOrden);
             
             if ($ordenId && isset($_POST['detalles'])) {
                 $this->procesarDetallesOrden($ordenId, $_POST['detalles']);
-                $totales = $this->calcularTotalOrden($ordenId);
+                
+                // Usar los totales calculados en el frontend
+                $subtotal = floatval($_POST['subtotal'] ?? 0);
+                $descuento = floatval($_POST['descuento_total'] ?? 0);
+                $impuestos = floatval($_POST['impuestos'] ?? 0);
+                $total = floatval($_POST['total'] ?? 0);
                 
                 $ordenModel->update($ordenId, [
-                    'subtotal' => $totales['subtotal'],
-                    'descuento' => $totales['descuento'],
-                    'impuestos' => $totales['impuestos'],
-                    'total' => $totales['total'],
-                    'saldo_pendiente' => $totales['total']
+                    'subtotal' => $subtotal,
+                    'descuento' => $descuento,
+                    'impuestos' => $impuestos,
+                    'total' => $total,
+                    'saldo_pendiente' => $total
                 ]);
             }
             
@@ -326,6 +331,8 @@ class VentasController extends Controller {
     }
     
     private function procesarDetallesOrden($ordenId, $detalles) {
+        $db = Database::getInstance();
+        
         foreach ($detalles as $detalle) {
             if (empty($detalle['producto_id']) || empty($detalle['cantidad'])) {
                 continue;
@@ -345,11 +352,11 @@ class VentasController extends Controller {
                 'observaciones' => $detalle['observaciones'] ?? ''
             ];
             
-            $this->db->query(
+            $stmt = $db->prepare(
                 "INSERT INTO orden_venta_detalles (orden_venta_id, producto_id, cantidad, precio_unitario, descuento, subtotal, observaciones) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?)",
-                array_values($datosDetalle)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)"
             );
+            $stmt->execute(array_values($datosDetalle));
         }
     }
     
