@@ -164,4 +164,50 @@ class ProduccionController extends Controller {
             'lote' => $lote
         ]);
     }
+    
+    public function crearReceta() {
+        $this->requireAuth();
+        
+        $productoModel = new Producto();
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $recetaModel = new Receta();
+            
+            $datos = [
+                'producto_id' => $_POST['producto_id'],
+                'codigo' => $_POST['codigo'],
+                'nombre' => $_POST['nombre'],
+                'descripcion' => $_POST['descripcion'] ?? null,
+                'rendimiento_litros_leche' => $_POST['rendimiento_litros_leche'],
+                'rendimiento_kg_queso' => $_POST['rendimiento_kg_queso'],
+                'tiempo_preparacion' => $_POST['tiempo_preparacion'],
+                'tiempo_maduracion' => $_POST['tiempo_maduracion'] ?? null,
+                'temperatura_proceso' => $_POST['temperatura_proceso'] ?? null,
+                'ph_optimo' => $_POST['ph_optimo'] ?? null,
+                'humedad_maduracion' => $_POST['humedad_maduracion'] ?? null,
+                'instrucciones' => $_POST['instrucciones'] ?? null,
+                'version' => '1.0',
+                'estado' => 'activo'
+            ];
+            
+            $recetaId = $recetaModel->create($datos);
+            
+            if ($recetaId) {
+                $_SESSION['flash_message'] = 'Receta creada exitosamente';
+                $_SESSION['flash_type'] = 'success';
+                header('Location: ' . BASE_URL . '/produccion/recetas');
+                exit;
+            } else {
+                $_SESSION['flash_message'] = 'Error al crear la receta';
+                $_SESSION['flash_type'] = 'error';
+            }
+        }
+        
+        $productos = $productoModel->getActivos();
+        
+        $this->view->render('modules/produccion/crear-receta', [
+            'title' => 'Crear Nueva Receta',
+            'productos' => $productos
+        ]);
+    }
 }
