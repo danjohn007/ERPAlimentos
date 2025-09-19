@@ -23,7 +23,7 @@ function getBaseUrl() {
 
 // Configuración global
 define('BASE_URL', getBaseUrl());
-define('APP_NAME', 'ERP Quesos');
+define('APP_NAME', 'ERP Food');
 define('APP_VERSION', '1.0.0');
 define('DEFAULT_TIMEZONE', 'America/Mexico_City');
 
