@@ -10,15 +10,19 @@ class InventarioController extends Controller {
     public function index() {
         $this->requireAuth();
         
+        $inventarioModel = new Inventario();
+        
+        $inventarioCompleto = $inventarioModel->getInventarioCompleto();
+        $proximosVencer = $inventarioModel->getProximosVencer();
+        $vencidos = $inventarioModel->getVencidos();
+        $resumenTipo = $inventarioModel->getResumenPorTipo();
+        
         $this->view->render('modules/inventario/index', [
             'title' => 'Módulo de Inventario',
-            'message' => 'Este módulo está en desarrollo. Pronto podrás gestionar el inventario.',
-            'features' => [
-                'Control de stock',
-                'Movimientos de inventario',
-                'Alertas de stock mínimo',
-                'Valoración de inventario'
-            ]
+            'inventario_completo' => $inventarioCompleto,
+            'proximos_vencer' => $proximosVencer,
+            'vencidos' => $vencidos,
+            'resumen_tipo' => $resumenTipo
         ]);
     }
     
