@@ -61,10 +61,29 @@ class DashboardController extends Controller {
             // Ventas del mes
             $ventasMes = $db->queryOne("
                 SELECT COUNT(*) as total_ordenes, SUM(total) as total_ventas
-                FROM ventas 
-                WHERE MONTH(fecha_venta) = MONTH(CURDATE()) 
-                AND YEAR(fecha_venta) = YEAR(CURDATE())
+                FROM ordenes_venta 
+                WHERE MONTH(fecha_orden) = MONTH(CURDATE()) 
+                AND YEAR(fecha_orden) = YEAR(CURDATE())
             ") ?? $ventasMes;
+            
+            // Datos para gráfica de producción semanal (últimos 7 días)
+            $produccionSemanal = $db->query("
+                SELECT DATE(fecha_inicio) as fecha, SUM(cantidad_producida) as kg_producidos
+                FROM lotes_produccion 
+                WHERE fecha_inicio >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                AND estado = 'terminado'
+                GROUP BY DATE(fecha_inicio)
+                ORDER BY fecha ASC
+            ") ?? [];
+            
+            // Datos para gráfica de productos por tipo
+            $productosPorTipo = $db->query("
+                SELECT p.tipo, COUNT(*) as cantidad, SUM(i.cantidad) as stock_total
+                FROM productos p
+                LEFT JOIN inventario i ON i.item_id = p.id AND i.tipo = 'producto_terminado'
+                WHERE p.estado = 'activo'
+                GROUP BY p.tipo
+            ") ?? [];
             
         } catch (Exception $e) {
             // En caso de error de base de datos, usar datos demo
@@ -83,6 +102,23 @@ class DashboardController extends Controller {
                 ['numero_lote' => 'LOT-DEMO-002', 'producto' => 'Queso Fresco', 'fecha_inicio' => date('Y-m-d H:i:s', strtotime('+1 hour')), 'estado' => 'programado'],
             ];
             $ventasMes = ['total_ordenes' => 45, 'total_ventas' => 85430.50];
+            
+            // Datos demo para gráficas
+            $produccionSemanal = [
+                ['fecha' => date('Y-m-d', strtotime('-6 days')), 'kg_producidos' => 120],
+                ['fecha' => date('Y-m-d', strtotime('-5 days')), 'kg_producidos' => 150],
+                ['fecha' => date('Y-m-d', strtotime('-4 days')), 'kg_producidos' => 180],
+                ['fecha' => date('Y-m-d', strtotime('-3 days')), 'kg_producidos' => 90],
+                ['fecha' => date('Y-m-d', strtotime('-2 days')), 'kg_producidos' => 200],
+                ['fecha' => date('Y-m-d', strtotime('-1 days')), 'kg_producidos' => 160],
+                ['fecha' => date('Y-m-d'), 'kg_producidos' => 140],
+            ];
+            
+            $productosPorTipo = [
+                ['tipo' => 'frescos', 'cantidad' => 15, 'stock_total' => 280],
+                ['tipo' => 'semicurados', 'cantidad' => 10, 'stock_total' => 180],
+                ['tipo' => 'curados', 'cantidad' => 8, 'stock_total' => 120],
+            ];
         }
         
         $this->view->render('dashboard/index', [
@@ -91,7 +127,9 @@ class DashboardController extends Controller {
             'inventarioProductos' => $inventarioProductos,
             'proximosVencer' => $proximosVencer,
             'lotesEnProceso' => $lotesEnProceso,
-            'ventasMes' => $ventasMes
+            'ventasMes' => $ventasMes,
+            'produccionSemanal' => $produccionSemanal,
+            'productosPorTipo' => $productosPorTipo
         ]);
     }
 }

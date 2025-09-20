@@ -252,15 +252,33 @@
 </div>
 
 <script>
+// Preparar datos para gráfica de producción semanal
+const produccionData = <?php echo json_encode($produccionSemanal); ?>;
+const labels = [];
+const data = [];
+
+// Generar etiquetas de los últimos 7 días
+for (let i = 6; i >= 0; i--) {
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() - i);
+    const dia = fecha.toLocaleDateString('es', { weekday: 'short' });
+    labels.push(dia.charAt(0).toUpperCase() + dia.slice(1));
+    
+    // Buscar datos para esta fecha
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const registro = produccionData.find(item => item.fecha === fechaStr);
+    data.push(registro ? parseFloat(registro.kg_producidos) : 0);
+}
+
 // Gráfica de Producción Semanal
 const ctxProduccion = document.getElementById('produccionChart').getContext('2d');
 new Chart(ctxProduccion, {
     type: 'line',
     data: {
-        labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+        labels: labels,
         datasets: [{
             label: 'Kg Producidos',
-            data: [120, 150, 180, 90, 200, 160, 140],
+            data: data,
             borderColor: '#2E8B57',
             backgroundColor: 'rgba(46, 139, 87, 0.1)',
             tension: 0.4
@@ -282,15 +300,32 @@ new Chart(ctxProduccion, {
     }
 });
 
+// Preparar datos para gráfica de productos por tipo
+const tiposData = <?php echo json_encode($productosPorTipo); ?>;
+const tiposLabels = [];
+const tiposValues = [];
+const tiposColors = ['#2E8B57', '#FFD700', '#FF6B6B', '#4CAF50', '#FF9800'];
+
+tiposData.forEach((tipo, index) => {
+    tiposLabels.push(tipo.tipo.charAt(0).toUpperCase() + tipo.tipo.slice(1));
+    tiposValues.push(parseFloat(tipo.stock_total) || 0);
+});
+
+// Si no hay datos, usar valores por defecto
+if (tiposLabels.length === 0) {
+    tiposLabels.push('Frescos', 'Semicurados', 'Curados');
+    tiposValues.push(45, 30, 25);
+}
+
 // Gráfica de Productos por Tipo
 const ctxProductos = document.getElementById('productosChart').getContext('2d');
 new Chart(ctxProductos, {
     type: 'doughnut',
     data: {
-        labels: ['Frescos', 'Semicurados', 'Curados'],
+        labels: tiposLabels,
         datasets: [{
-            data: [45, 30, 25],
-            backgroundColor: ['#2E8B57', '#FFD700', '#FF6B6B'],
+            data: tiposValues,
+            backgroundColor: tiposColors.slice(0, tiposLabels.length),
             borderWidth: 2,
             borderColor: '#fff'
         }]
