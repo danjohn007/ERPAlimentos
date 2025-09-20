@@ -8,10 +8,22 @@
                     <i class="fas fa-truck"></i> <?= $title ?>
                 </h1>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="<?= $this->url('dashboard') ?>">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="<?= $this->url('materias-primas') ?>">Materias Primas</a></li>
-                        <li class="breadcrumb-item active">Proveedores</li>
+                    <ol class="breadcrumb mb-0 custom-breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="<?= $this->url('dashboard') ?>" class="btn btn-outline-primary btn-sm breadcrumb-btn">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="<?= $this->url('materias-primas') ?>" class="btn btn-outline-info btn-sm breadcrumb-btn">
+                                <i class="fas fa-seedling"></i> Materias Primas
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            <span class="btn btn-success btn-sm disabled">
+                                <i class="fas fa-truck"></i> Proveedores
+                            </span>
+                        </li>
                     </ol>
                 </nav>
             </div>
@@ -223,12 +235,12 @@
                                     <td>
                                         <?php 
                                         $tipos = [
-                                            'leche' => '<span class="badge badge-primary">Leche</span>',
-                                            'insumos' => '<span class="badge badge-secondary">Insumos</span>',
-                                            'empaques' => '<span class="badge badge-info">Empaques</span>',
-                                            'servicios' => '<span class="badge badge-warning">Servicios</span>'
+                                            'leche' => '<span class="badge badge-primary text-white">Leche</span>',
+                                            'insumos' => '<span class="badge badge-secondary text-white">Insumos</span>',
+                                            'empaques' => '<span class="badge badge-info text-white">Empaques</span>',
+                                            'servicios' => '<span class="badge badge-warning text-dark">Servicios</span>'
                                         ];
-                                        echo $tipos[$proveedor['tipo']] ?? '<span class="badge badge-light">Otro</span>';
+                                        echo $tipos[$proveedor['tipo']] ?? '<span class="badge badge-light text-dark">Otro</span>';
                                         ?>
                                     </td>
                                     <td><?= htmlspecialchars($proveedor['contacto'] ?? '') ?></td>
@@ -248,18 +260,18 @@
                                     </td>
                                     <td>
                                         <?php if ($proveedor['certificaciones']): ?>
-                                            <span class="badge badge-success" title="<?= htmlspecialchars($proveedor['certificaciones']) ?>">
+                                            <span class="badge badge-success text-white" title="<?= htmlspecialchars($proveedor['certificaciones']) ?>">
                                                 <i class="fas fa-certificate"></i> Certificado
                                             </span>
                                         <?php else: ?>
-                                            <span class="badge badge-light">Sin certificación</span>
+                                            <span class="badge badge-light text-dark">Sin certificación</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php if ($proveedor['estado'] === 'activo'): ?>
-                                            <span class="badge badge-success">Activo</span>
+                                            <span class="badge badge-success text-white">Activo</span>
                                         <?php else: ?>
-                                            <span class="badge badge-secondary">Inactivo</span>
+                                            <span class="badge badge-secondary text-white">Inactivo</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -300,6 +312,76 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Estilos personalizados para el breadcrumb */
+.custom-breadcrumb {
+    background-color: #f8f9fa;
+    border-radius: 25px;
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.breadcrumb-btn {
+    border-radius: 20px !important;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+    margin: 0 5px;
+    font-weight: 500;
+    border-width: 2px;
+}
+
+.breadcrumb-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn-outline-primary.breadcrumb-btn:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.btn-outline-info.breadcrumb-btn:hover {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+}
+
+.breadcrumb-item::before {
+    content: "→";
+    color: #6c757d;
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+.breadcrumb-item:first-child::before {
+    content: "";
+}
+
+.breadcrumb-item.active .btn.disabled {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+    opacity: 1;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .custom-breadcrumb {
+        padding: 8px 15px;
+    }
+    
+    .breadcrumb-btn {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .breadcrumb-btn i {
+        display: none;
+    }
+}
+</style>
 
 <script>
 // Funciones para la gestión de proveedores
