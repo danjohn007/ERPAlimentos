@@ -326,6 +326,8 @@ class VentasController extends Controller {
     }
     
     private function procesarDetallesOrden($ordenId, $detalles) {
+        $db = Database::getInstance();
+        
         foreach ($detalles as $detalle) {
             if (empty($detalle['producto_id']) || empty($detalle['cantidad'])) {
                 continue;
@@ -335,21 +337,19 @@ class VentasController extends Controller {
             $descuento = $detalle['descuento'] ?? 0;
             $subtotalFinal = $subtotal - $descuento;
             
-            $datosDetalle = [
-                'orden_venta_id' => $ordenId,
-                'producto_id' => $detalle['producto_id'],
-                'cantidad' => $detalle['cantidad'],
-                'precio_unitario' => $detalle['precio_unitario'],
-                'descuento' => $descuento,
-                'subtotal' => $subtotalFinal,
-                'observaciones' => $detalle['observaciones'] ?? ''
-            ];
+            $sql = "INSERT INTO orden_venta_detalles (orden_venta_id, producto_id, cantidad, precio_unitario, descuento, subtotal, observaciones) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
             
-            $this->db->query(
-                "INSERT INTO orden_venta_detalles (orden_venta_id, producto_id, cantidad, precio_unitario, descuento, subtotal, observaciones) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?)",
-                array_values($datosDetalle)
-            );
+            $stmt = $db->prepare($sql);
+            $stmt->execute([
+                $ordenId,
+                $detalle['producto_id'],
+                $detalle['cantidad'],
+                $detalle['precio_unitario'],
+                $descuento,
+                $subtotalFinal,
+                $detalle['observaciones'] ?? ''
+            ]);
         }
     }
     

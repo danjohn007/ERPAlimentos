@@ -262,9 +262,9 @@ function calcularTotales() {
         descuentoTotal += descuento;
     });
     
-    // Aplicar descuento del cliente
-    const descuentoCliente = subtotal * (descuentoCliente / 100);
-    descuentoTotal += descuentoCliente;
+    // Aplicar descuento del cliente (usando variable global)
+    const descuentoClienteCalc = subtotal * (descuentoCliente / 100);
+    descuentoTotal += descuentoClienteCalc;
     
     const subtotalFinal = subtotal - descuentoTotal;
     const iva = subtotalFinal * 0.16;
