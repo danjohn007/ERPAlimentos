@@ -106,6 +106,29 @@
                             </a>
                         </div>
                     </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= $this->url('produccion/recetas/crear') ?>" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-plus-circle"></i> Nueva Receta
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button class="btn btn-outline-warning btn-block" onclick="checkRawMaterials()">
+                                <i class="fas fa-warehouse"></i> Check Materias Primas
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= $this->url('reportes') ?>" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-chart-line"></i> Reportes Producción
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button class="btn btn-outline-success btn-block" onclick="performBatchQualityCheck()">
+                                <i class="fas fa-clipboard-check"></i> Control Lotes
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -228,3 +251,71 @@
     </div>
     <?php endif; ?>
 </div>
+
+<script>
+// Funciones para acciones rápidas de producción
+function checkRawMaterials() {
+    // Verificar el estado de las materias primas críticas
+    fetch('/ajax/check-raw-materials')
+        .then(response => response.json())
+        .then(data => {
+            if (data.critical_low.length > 0) {
+                let message = `¡Atención! Materias primas con stock crítico:\n\n`;
+                data.critical_low.forEach(item => {
+                    message += `• ${item.nombre}: ${item.stock_actual} ${item.unidad_medida} (Mín: ${item.stock_minimo})\n`;
+                });
+                message += `\n¿Desea ir al módulo de Materias Primas?`;
+                
+                if (confirm(message)) {
+                    window.location.href = '/materias-primas';
+                }
+            } else {
+                alert('✓ Todas las materias primas tienen stock suficiente para la producción.');
+            }
+        })
+        .catch(error => {
+            alert('Error al verificar materias primas. Por favor, verifique manualmente.');
+            console.error('Error:', error);
+        });
+}
+
+function performBatchQualityCheck() {
+    // Realizar verificación rápida de calidad de lotes activos
+    const lotesEnProceso = <?= json_encode($lotes_en_proceso) ?>;
+    const lotesEnMaduracion = <?= json_encode($lotes_en_maduracion) ?>;
+    
+    if (lotesEnProceso.length === 0 && lotesEnMaduracion.length === 0) {
+        alert('No hay lotes activos para revisar.');
+        return;
+    }
+    
+    let message = 'Lotes que requieren atención:\n\n';
+    let needsAttention = false;
+    
+    // Verificar lotes en proceso (más de 24 horas)
+    lotesEnProceso.forEach(lote => {
+        const hoursInProcess = Math.floor((new Date() - new Date(lote.fecha_inicio)) / (1000 * 60 * 60));
+        if (hoursInProcess > 24) {
+            message += `• Lote ${lote.numero_lote}: ${hoursInProcess}h en proceso\n`;
+            needsAttention = true;
+        }
+    });
+    
+    // Verificar lotes próximos a terminar maduración
+    lotesEnMaduracion.forEach(lote => {
+        if (lote.dias_restantes <= 2) {
+            message += `• Lote ${lote.numero_lote}: ${lote.dias_restantes} días para terminar\n`;
+            needsAttention = true;
+        }
+    });
+    
+    if (needsAttention) {
+        message += '\n¿Desea ir al módulo de Calidad?';
+        if (confirm(message)) {
+            window.location.href = '/calidad';
+        }
+    } else {
+        alert('✓ Todos los lotes están en estado normal.');
+    }
+}
+</script>

@@ -3,10 +3,34 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
+            <!-- Breadcrumb con estilo -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="<?= $this->url('dashboard') ?>" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="<?= $this->url('materias-primas') ?>" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-seedling"></i> Materias Primas
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="<?= $this->url('materias-primas/proveedores') ?>" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-truck"></i> Proveedores
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <span class="badge badge-secondary">Nuevo Proveedor</span>
+                    </li>
+                </ol>
+            </nav>
+            
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="fas fa-user-plus"></i> <?php echo $title; ?></h2>
-                <a href="/compras/proveedores" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver a Proveedores
+                <a href="<?= $this->url('materias-primas/proveedores') ?>" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-arrow-left"></i> Volver a Gestión de Proveedores
                 </a>
             </div>
             
@@ -177,6 +201,49 @@
 </div>
 
 <script>
+// CSS personalizado para los botones del breadcrumb
+const style = document.createElement('style');
+style.textContent = `
+    .breadcrumb {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .breadcrumb .btn {
+        margin-right: 8px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .breadcrumb .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .breadcrumb .badge {
+        background-color: #6c757d;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+    }
+    
+    .breadcrumb-item::before {
+        content: "→";
+        color: #6c757d;
+        font-weight: bold;
+        margin: 0 8px;
+    }
+    
+    .breadcrumb-item:first-child::before {
+        content: "";
+    }
+`;
+document.head.appendChild(style);
+
 // Mostrar/ocultar campo de días de crédito según el término de pago seleccionado
 document.getElementById('terminos_pago').addEventListener('change', function() {
     const diasCreditoContainer = document.getElementById('dias-credito-container');

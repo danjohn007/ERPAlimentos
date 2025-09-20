@@ -137,6 +137,29 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-3 mb-2">
+                            <button class="btn btn-outline-warning btn-block" onclick="performInventoryAdjustment()">
+                                <i class="fas fa-balance-scale"></i> Ajuste Inventario
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button class="btn btn-outline-danger btn-block" onclick="checkExpirationAlerts()">
+                                <i class="fas fa-clock"></i> Alertas Vencimiento
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button class="btn btn-outline-info btn-block" onclick="evaluateSuppliers()">
+                                <i class="fas fa-star"></i> Evaluar Proveedores
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="<?= $this->url('compras/nueva_orden') ?>" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-shopping-cart"></i> Nueva Orden Compra
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -254,3 +277,150 @@
         </div>
     </div>
 </div>
+
+<script>
+// Funciones para acciones rápidas de materias primas
+function performInventoryAdjustment() {
+    const materiasConStock = <?= json_encode($materias_primas) ?>;
+    let options = '<option value="">Seleccionar materia prima...</option>';
+    
+    materiasConStock.forEach(mp => {
+        options += `<option value="${mp.id}">${mp.nombre} - Stock actual: ${mp.stock_actual} ${mp.unidad_medida}</option>`;
+    });
+    
+    const html = `
+        <div class="modal fade" id="modalAjusteInventario" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Ajuste de Inventario</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formAjusteInventario">
+                            <div class="form-group">
+                                <label>Materia Prima</label>
+                                <select class="form-control" id="materiaPrimaAjuste" required>
+                                    ${options}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Nueva Cantidad</label>
+                                <input type="number" class="form-control" id="nuevaCantidad" 
+                                       step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Motivo del Ajuste</label>
+                                <select class="form-control" id="motivoAjuste" required>
+                                    <option value="">Seleccionar motivo...</option>
+                                    <option value="merma">Merma</option>
+                                    <option value="vencimiento">Vencimiento</option>
+                                    <option value="conteo_fisico">Conteo Físico</option>
+                                    <option value="dano">Daño</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Observaciones</label>
+                                <textarea class="form-control" id="observacionesAjuste" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-warning" onclick="procesarAjusteInventario()">
+                            <i class="fas fa-balance-scale"></i> Realizar Ajuste
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    $('#modalAjusteInventario').remove();
+    $('body').append(html);
+    $('#modalAjusteInventario').modal('show');
+}
+
+function procesarAjusteInventario() {
+    const materiaPrimaId = document.getElementById('materiaPrimaAjuste').value;
+    const nuevaCantidad = document.getElementById('nuevaCantidad').value;
+    const motivo = document.getElementById('motivoAjuste').value;
+    const observaciones = document.getElementById('observacionesAjuste').value;
+    
+    if (!materiaPrimaId || !nuevaCantidad || !motivo) {
+        alert('Por favor complete todos los campos requeridos.');
+        return;
+    }
+    
+    // Simulate AJAX call
+    alert(`Ajuste procesado:\nMateria Prima ID: ${materiaPrimaId}\nNueva cantidad: ${nuevaCantidad}\nMotivo: ${motivo}\n\nEn implementación real, esto enviaría los datos al servidor.`);
+    $('#modalAjusteInventario').modal('hide');
+}
+
+function checkExpirationAlerts() {
+    const proximasVencer = <?= json_encode($proximas_vencer) ?>;
+    
+    if (proximasVencer.length === 0) {
+        alert('✓ No hay materias primas próximas a vencer.');
+        return;
+    }
+    
+    let message = 'Materias primas próximas a vencer:\n\n';
+    proximasVencer.forEach(mp => {
+        const diasRestantes = Math.ceil((new Date(mp.fecha_vencimiento) - new Date()) / (1000 * 60 * 60 * 24));
+        message += `• ${mp.nombre}: ${diasRestantes} días restantes\n`;
+    });
+    
+    message += '\n¿Desea ir al inventario para tomar acciones?';
+    if (confirm(message)) {
+        window.location.href = '/materias-primas/inventario';
+    }
+}
+
+function evaluateSuppliers() {
+    const proveedoresCertificados = <?= json_encode($proveedores_certificados) ?>;
+    
+    let message = 'Evaluación rápida de proveedores:\n\n';
+    message += `Proveedores certificados: ${proveedoresCertificados.length}\n`;
+    
+    // Get materials with low stock and their suppliers
+    const stockBajo = <?= json_encode($stock_bajo) ?>;
+    const proveedoresConProblemas = new Set();
+    
+    stockBajo.forEach(mp => {
+        if (mp.proveedor_nombre) {
+            proveedoresConProblemas.add(mp.proveedor_nombre);
+        }
+    });
+    
+    if (proveedoresConProblemas.size > 0) {
+        message += `Proveedores con materias primas en stock bajo: ${proveedoresConProblemas.size}\n`;
+        message += `Proveedores: ${Array.from(proveedoresConProblemas).join(', ')}\n\n`;
+        message += '¿Desea ir al módulo de proveedores para revisar?';
+        
+        if (confirm(message)) {
+            window.location.href = '/materias-primas/proveedores';
+        }
+    } else {
+        message += '\n✓ Todos los proveedores mantienen stock adecuado.';
+        alert(message);
+    }
+}
+
+// Existing functions for the modals and other functionality would go here...
+function verMateriaPrima(id) {
+    alert(`Ver detalles de materia prima ID: ${id}`);
+}
+
+function editarMateriaPrima(id) {
+    alert(`Editar materia prima ID: ${id}`);
+}
+
+function entradaInventario(id) {
+    alert(`Registrar entrada para materia prima ID: ${id}`);
+}
+</script>
