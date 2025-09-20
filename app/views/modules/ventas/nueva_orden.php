@@ -263,8 +263,8 @@ function calcularTotales() {
     });
     
     // Aplicar descuento del cliente
-    const descuentoCliente = subtotal * (descuentoCliente / 100);
-    descuentoTotal += descuentoCliente;
+    const descuentoClienteAplicado = subtotal * (descuentoCliente / 100);
+    descuentoTotal += descuentoClienteAplicado;
     
     const subtotalFinal = subtotal - descuentoTotal;
     const iva = subtotalFinal * 0.16;
