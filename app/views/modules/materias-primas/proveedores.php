@@ -109,7 +109,7 @@
                         <i class="fas fa-bolt"></i> Acciones Rápidas
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body action-buttons">
                     <div class="row">
                         <div class="col-md-3 mb-2">
                             <a href="<?= $this->url('compras/nuevo_proveedor') ?>" class="btn btn-primary btn-block">
@@ -312,76 +312,6 @@
         </div>
     </div>
 </div>
-
-<style>
-/* Estilos personalizados para el breadcrumb */
-.custom-breadcrumb {
-    background-color: #f8f9fa;
-    border-radius: 25px;
-    padding: 10px 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.breadcrumb-btn {
-    border-radius: 20px !important;
-    transition: all 0.3s ease;
-    text-decoration: none !important;
-    margin: 0 5px;
-    font-weight: 500;
-    border-width: 2px;
-}
-
-.breadcrumb-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.btn-outline-primary.breadcrumb-btn:hover {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-}
-
-.btn-outline-info.breadcrumb-btn:hover {
-    background-color: #17a2b8;
-    border-color: #17a2b8;
-    color: white;
-}
-
-.breadcrumb-item::before {
-    content: "→";
-    color: #6c757d;
-    font-weight: bold;
-    margin: 0 10px;
-}
-
-.breadcrumb-item:first-child::before {
-    content: "";
-}
-
-.breadcrumb-item.active .btn.disabled {
-    background-color: #28a745;
-    border-color: #28a745;
-    color: white;
-    opacity: 1;
-}
-
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    .custom-breadcrumb {
-        padding: 8px 15px;
-    }
-    
-    .breadcrumb-btn {
-        font-size: 0.8rem;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .breadcrumb-btn i {
-        display: none;
-    }
-}
-</style>
 
 <script>
 // Funciones para la gestión de proveedores

@@ -6,9 +6,17 @@
                     <i class="fas fa-shopping-cart"></i> <?= $title ?>
                 </h1>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="<?= $this->url('dashboard') ?>">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Ventas</li>
+                    <ol class="breadcrumb mb-0 custom-breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="<?= $this->url('dashboard') ?>" class="btn btn-outline-primary btn-sm breadcrumb-btn">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            <span class="btn btn-success btn-sm disabled">
+                                <i class="fas fa-shopping-cart"></i> Ventas
+                            </span>
+                        </li>
                     </ol>
                 </nav>
             </div>
@@ -93,7 +101,7 @@
                         <i class="fas fa-bolt"></i> Acciones Rápidas
                     </h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body action-buttons">
                     <div class="row">
                         <div class="col-md-3 mb-2">
                             <a href="<?= $this->url('ventas/nueva_orden') ?>" class="btn btn-primary btn-block">

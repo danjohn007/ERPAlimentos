@@ -128,6 +128,148 @@
             margin-bottom: 20px;
         }
         
+        /* Estilos personalizados para breadcrumbs estilo botón */
+        .custom-breadcrumb {
+            background-color: #f8f9fa;
+            border-radius: 25px;
+            padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .breadcrumb-btn {
+            border-radius: 20px !important;
+            transition: all 0.3s ease;
+            text-decoration: none !important;
+            margin: 0 5px;
+            font-weight: 500;
+            border-width: 2px;
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .breadcrumb-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+
+        .btn-outline-primary.breadcrumb-btn:hover {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .btn-outline-info.breadcrumb-btn:hover {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-outline-secondary.breadcrumb-btn:hover {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .breadcrumb-item::before {
+            content: "→";
+            color: #6c757d;
+            font-weight: bold;
+            margin: 0 10px;
+            font-size: 1.1rem;
+        }
+
+        .breadcrumb-item:first-child::before {
+            content: "";
+        }
+
+        .breadcrumb-item.active .btn.disabled {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+            opacity: 1;
+        }
+        
+        /* Estilos para botones de acción (btn-block mejorados) */
+        .action-buttons .btn-block {
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-width: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-buttons .btn-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .action-buttons .btn-block:hover::before {
+            left: 100%;
+        }
+        
+        .action-buttons .btn-block:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .action-buttons .btn-primary:hover {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+        
+        .action-buttons .btn-info:hover {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+        }
+        
+        .action-buttons .btn-success:hover {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+        }
+        
+        .action-buttons .btn-warning:hover {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+        }
+        
+        .action-buttons .btn-danger:hover {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+        
+        .action-buttons .btn-secondary:hover {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            .custom-breadcrumb {
+                padding: 8px 15px;
+            }
+            
+            .breadcrumb-btn {
+                font-size: 0.8rem;
+                padding: 0.25rem 0.5rem;
+                margin: 0 2px;
+            }
+            
+            .breadcrumb-btn i {
+                display: none;
+            }
+            
+            .action-buttons .btn-block {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
         .card-stats {
             border: none;
             border-radius: 10px;
