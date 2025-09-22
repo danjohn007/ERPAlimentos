@@ -36,19 +36,19 @@ class MateriasPrimasController extends Controller {
                     'id' => 1, 'codigo' => 'MP001', 'nombre' => 'Leche Entera', 'tipo' => 'Lácteo',
                     'stock_actual' => 500, 'unidad_medida' => 'litros', 'stock_minimo' => 100, 
                     'costo_unitario' => 3.50, 'proveedor_nombre' => 'Lácteos San Pedro',
-                    'estado' => 'activo', 'requiere_refrigeracion' => 1
+                    'estado' => 'activo', 'requiere_refrigeracion' => 1, 'certificaciones' => 'ISO 22000'
                 ],
                 [
                     'id' => 2, 'codigo' => 'MP002', 'nombre' => 'Cuajo Natural', 'tipo' => 'Insumo',
                     'stock_actual' => 15, 'unidad_medida' => 'kg', 'stock_minimo' => 20, 
                     'costo_unitario' => 45.00, 'proveedor_nombre' => 'Insumos Queseros',
-                    'estado' => 'activo', 'requiere_refrigeracion' => 0
+                    'estado' => 'activo', 'requiere_refrigeracion' => 0, 'certificaciones' => 'HACCP'
                 ],
                 [
                     'id' => 3, 'codigo' => 'MP003', 'nombre' => 'Sal Marina', 'tipo' => 'Condimento',
                     'stock_actual' => 80, 'unidad_medida' => 'kg', 'stock_minimo' => 25, 
                     'costo_unitario' => 12.00, 'proveedor_nombre' => 'Distribuidora Sal',
-                    'estado' => 'activo', 'requiere_refrigeracion' => 0
+                    'estado' => 'activo', 'requiere_refrigeracion' => 0, 'certificaciones' => null
                 ],
             ];
             

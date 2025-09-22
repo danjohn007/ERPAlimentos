@@ -236,8 +236,8 @@
                                     <td>
                                         <?php if ($mp['proveedor_nombre']): ?>
                                             <?= htmlspecialchars($mp['proveedor_nombre']) ?>
-                                            <?php if ($mp['certificaciones']): ?>
-                                            <br><small class="text-success"><i class="fas fa-certificate"></i> Certificado</small>
+                                            <?php if (!empty($mp['certificaciones'])): ?>
+                                            <br><small class="text-success"><i class="fas fa-certificate"></i> <?= htmlspecialchars($mp['certificaciones']) ?></small>
                                             <?php endif; ?>
                                         <?php else: ?>
                                             <span class="text-muted">Sin asignar</span>
