@@ -4,9 +4,17 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0"><?= $title ?></h1>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="<?= $this->url('dashboard') ?>">Dashboard</a></li>
-                        <li class="breadcrumb-item active"><?= $title ?></li>
+                    <ol class="breadcrumb mb-0 custom-breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="<?= $this->url('dashboard') ?>" class="btn btn-outline-primary btn-sm breadcrumb-btn">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            <span class="btn btn-success btn-sm disabled">
+                                <i class="fas fa-tools"></i> <?= $title ?>
+                            </span>
+                        </li>
                     </ol>
                 </nav>
             </div>

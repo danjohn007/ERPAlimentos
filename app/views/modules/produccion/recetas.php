@@ -6,10 +6,22 @@
                     <i class="fas fa-book"></i> <?= $title ?>
                 </h1>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="<?= $this->url('dashboard') ?>">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="<?= $this->url('produccion') ?>">Producción</a></li>
-                        <li class="breadcrumb-item active">Recetas</li>
+                    <ol class="breadcrumb mb-0 custom-breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="<?= $this->url('dashboard') ?>" class="btn btn-outline-primary btn-sm breadcrumb-btn">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="<?= $this->url('produccion') ?>" class="btn btn-outline-info btn-sm breadcrumb-btn">
+                                <i class="fas fa-industry"></i> Producción
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            <span class="btn btn-success btn-sm disabled">
+                                <i class="fas fa-book"></i> Recetas
+                            </span>
+                        </li>
                     </ol>
                 </nav>
             </div>
