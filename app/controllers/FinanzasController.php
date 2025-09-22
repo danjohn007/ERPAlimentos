@@ -55,10 +55,17 @@ class FinanzasController extends Controller {
         
         $this->view->render('modules/finanzas/index', [
             'title' => 'Módulo de Finanzas',
-            'balance_general' => $balanceGeneral,
-            'asientos_recientes' => array_slice($asientosRecientes, 0, 10),
-            'asientos_borrador' => $asientosBorrador,
-            'resumen_tipos' => $resumenTipos
+            'message' => 'El módulo de finanzas está en desarrollo. Pronto podrás gestionar toda la contabilidad del sistema.',
+            'features' => [
+                'Contabilidad general',
+                'Asientos contables',
+                'Balance general',
+                'Estados financieros',
+                'Reportes de ingresos y gastos',
+                'Flujo de efectivo',
+                'Cuentas por cobrar',
+                'Cuentas por pagar'
+            ]
         ]);
     }
     

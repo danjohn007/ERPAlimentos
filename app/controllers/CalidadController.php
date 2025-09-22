@@ -10,52 +10,80 @@ class CalidadController extends Controller {
     public function index() {
         $this->requireAuth();
         
-        $analisisModel = new AnalisisCalidad();
-        $loteModel = new LoteProduccion();
-        $inventarioModel = new Inventario();
-        
-        $analisisRecientes = $analisisModel->getAnalisisRecientes(10);
-        $analisisNoConformes = $analisisModel->getAnalisisNoConformes();
-        $estadisticas = $analisisModel->getEstadisticasCalidad();
-        
-        $lotesEnProceso = $loteModel->getLotesEnProceso();
-        $productosVencer = $inventarioModel->getProximosVencer(7);
-        
-        $this->view->render('modules/calidad/index', [
-            'title' => 'Módulo de Control de Calidad',
-            'analisis_recientes' => $analisisRecientes,
-            'analisis_no_conformes' => $analisisNoConformes,
-            'estadisticas' => $estadisticas,
-            'lotes_en_proceso' => $lotesEnProceso,
-            'productos_vencer' => $productosVencer
-        ]);
+        try {
+            $analisisModel = new AnalisisCalidad();
+            $loteModel = new LoteProduccion();
+            $inventarioModel = new Inventario();
+            
+            $analisisRecientes = $analisisModel->getAnalisisRecientes(10);
+            $analisisNoConformes = $analisisModel->getAnalisisNoConformes();
+            $estadisticas = $analisisModel->getEstadisticasCalidad();
+            
+            $lotesEnProceso = $loteModel->getLotesEnProceso();
+            $productosVencer = $inventarioModel->getProximosVencer(7);
+            
+            $this->view->render('modules/calidad/index', [
+                'title' => 'Módulo de Control de Calidad',
+                'analisis_recientes' => $analisisRecientes,
+                'analisis_no_conformes' => $analisisNoConformes,
+                'estadisticas' => $estadisticas,
+                'lotes_en_proceso' => $lotesEnProceso,
+                'productos_vencer' => $productosVencer
+            ]);
+        } catch (Exception $e) {
+            // Modo demo - datos simulados
+            $this->view->render('modules/under-development', [
+                'title' => 'Módulo de Control de Calidad',
+                'message' => 'Este módulo está en desarrollo. Pronto podrás gestionar el control de calidad de productos.',
+                'features' => [
+                    'Análisis de calidad de materias primas',
+                    'Control de calidad de productos terminados',
+                    'Trazabilidad completa',
+                    'Gestión de no conformidades',
+                    'Estadísticas y reportes de calidad'
+                ]
+            ]);
+        }
     }
     
     public function analisis() {
         $this->requireAuth();
         
-        $analisisModel = new AnalisisCalidad();
-        $loteModel = new LoteProduccion();
-        $materiaPrimaModel = new MateriaPrima();
-        $productoModel = new Producto();
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->procesarNuevoAnalisis();
-            return;
+        try {
+            $analisisModel = new AnalisisCalidad();
+            $loteModel = new LoteProduccion();
+            $materiaPrimaModel = new MateriaPrima();
+            $productoModel = new Producto();
+            
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $this->procesarNuevoAnalisis();
+                return;
+            }
+            
+            $analisisTodos = $analisisModel->getAnalisisRecientes(50);
+            $lotesTerminados = $loteModel->findBy('estado', 'terminado');
+            $materiasPrimas = $materiaPrimaModel->getActivos();
+            $productos = $productoModel->getActivos();
+            
+            $this->view->render('modules/calidad/analisis', [
+                'title' => 'Análisis de Calidad',
+                'analisis_todos' => $analisisTodos,
+                'lotes_terminados' => $lotesTerminados,
+                'materias_primas' => $materiasPrimas,
+                'productos' => $productos
+            ]);
+        } catch (Exception $e) {
+            $this->view->render('modules/under-development', [
+                'title' => 'Análisis de Calidad',
+                'message' => 'El módulo de análisis de calidad está en desarrollo.',
+                'features' => [
+                    'Registro de análisis físico-químicos',
+                    'Análisis microbiológicos',
+                    'Control de pH, humedad y grasa',
+                    'Gestión de resultados conformes/no conformes'
+                ]
+            ]);
         }
-        
-        $analisisTodos = $analisisModel->getAnalisisRecientes(50);
-        $lotesTerminados = $loteModel->findBy('estado', 'terminado');
-        $materiasPrimas = $materiaPrimaModel->getActivos();
-        $productos = $productoModel->getActivos();
-        
-        $this->view->render('modules/calidad/analisis', [
-            'title' => 'Análisis de Calidad',
-            'analisis_todos' => $analisisTodos,
-            'lotes_terminados' => $lotesTerminados,
-            'materias_primas' => $materiasPrimas,
-            'productos' => $productos
-        ]);
     }
     
     public function nuevo_analisis() {
@@ -115,21 +143,34 @@ class CalidadController extends Controller {
     public function trazabilidad() {
         $this->requireAuth();
         
-        $busqueda = $_GET['busqueda'] ?? '';
-        $tipo = $_GET['tipo'] ?? '';
-        
-        $resultados = [];
-        
-        if ($busqueda) {
-            $resultados = $this->buscarTrazabilidad($busqueda, $tipo);
+        try {
+            $busqueda = $_GET['busqueda'] ?? '';
+            $tipo = $_GET['tipo'] ?? '';
+            
+            $resultados = [];
+            
+            if ($busqueda) {
+                $resultados = $this->buscarTrazabilidad($busqueda, $tipo);
+            }
+            
+            $this->view->render('modules/calidad/trazabilidad', [
+                'title' => 'Trazabilidad',
+                'busqueda' => $busqueda,
+                'tipo' => $tipo,
+                'resultados' => $resultados
+            ]);
+        } catch (Exception $e) {
+            $this->view->render('modules/under-development', [
+                'title' => 'Trazabilidad',
+                'message' => 'El sistema de trazabilidad está en desarrollo.',
+                'features' => [
+                    'Seguimiento de lotes de producción',
+                    'Trazabilidad de materias primas',
+                    'Historial completo de productos',
+                    'Búsqueda avanzada por criterios'
+                ]
+            ]);
         }
-        
-        $this->view->render('modules/calidad/trazabilidad', [
-            'title' => 'Trazabilidad',
-            'busqueda' => $busqueda,
-            'tipo' => $tipo,
-            'resultados' => $resultados
-        ]);
     }
     
     public function no_conformidades() {

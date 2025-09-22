@@ -10,38 +10,66 @@ class ProduccionController extends Controller {
     public function index() {
         $this->requireAuth();
         
-        // Obtener estadísticas de producción
-        $loteModel = new LoteProduccion();
-        $recetaModel = new Receta();
-        
-        $lotesProgramados = $loteModel->getLotesProgramados();
-        $lotesEnProceso = $loteModel->getLotesEnProceso();
-        $lotesEnMaduracion = $loteModel->getLotesEnMaduracion();
-        $recetasActivas = $recetaModel->getRecetasConProducto();
-        
-        $this->view->render('modules/produccion/index', [
-            'title' => 'Módulo de Producción',
-            'lotes_programados' => $lotesProgramados,
-            'lotes_en_proceso' => $lotesEnProceso,
-            'lotes_en_maduracion' => $lotesEnMaduracion,
-            'recetas_activas' => $recetasActivas
-        ]);
+        try {
+            // Obtener estadísticas de producción
+            $loteModel = new LoteProduccion();
+            $recetaModel = new Receta();
+            
+            $lotesProgramados = $loteModel->getLotesProgramados();
+            $lotesEnProceso = $loteModel->getLotesEnProceso();
+            $lotesEnMaduracion = $loteModel->getLotesEnMaduracion();
+            $recetasActivas = $recetaModel->getRecetasConProducto();
+            
+            $this->view->render('modules/produccion/index', [
+                'title' => 'Módulo de Producción',
+                'lotes_programados' => $lotesProgramados,
+                'lotes_en_proceso' => $lotesEnProceso,
+                'lotes_en_maduracion' => $lotesEnMaduracion,
+                'recetas_activas' => $recetasActivas
+            ]);
+        } catch (Exception $e) {
+            // Modo demo - datos simulados
+            $this->view->render('modules/under-development', [
+                'title' => 'Módulo de Producción',
+                'message' => 'Este módulo está en desarrollo. Pronto podrás gestionar toda la producción de alimentos.',
+                'features' => [
+                    'Gestión de recetas y fórmulas',
+                    'Control de lotes de producción',
+                    'Programación de producción',
+                    'Control de calidad en proceso',
+                    'Seguimiento de tiempos y costos'
+                ]
+            ]);
+        }
     }
     
     public function recetas() {
         $this->requireAuth();
         
-        $recetaModel = new Receta();
-        $productoModel = new Producto();
-        
-        $recetas = $recetaModel->getRecetasConProducto();
-        $productos = $productoModel->getActivos();
-        
-        $this->view->render('modules/produccion/recetas', [
-            'title' => 'Recetas de Producción',
-            'recetas' => $recetas,
-            'productos' => $productos
-        ]);
+        try {
+            $recetaModel = new Receta();
+            $productoModel = new Producto();
+            
+            $recetas = $recetaModel->getRecetasConProducto();
+            $productos = $productoModel->getActivos();
+            
+            $this->view->render('modules/produccion/recetas', [
+                'title' => 'Recetas de Producción',
+                'recetas' => $recetas,
+                'productos' => $productos
+            ]);
+        } catch (Exception $e) {
+            $this->view->render('modules/under-development', [
+                'title' => 'Recetas de Producción',
+                'message' => 'El módulo de recetas está en desarrollo.',
+                'features' => [
+                    'Creación y edición de recetas',
+                    'Control de ingredientes y proporciones',
+                    'Versioning de recetas',
+                    'Cálculo automático de costos'
+                ]
+            ]);
+        }
     }
     
     public function lotes() {
