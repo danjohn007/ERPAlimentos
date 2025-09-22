@@ -1,13 +1,13 @@
 <?php
 /**
- * Controlador AJAX
+ * Controlador AJAX (sin sufijo Controller para coincidir con el router)
  */
 
 defined('ERP_QUESOS') or die('Acceso denegado');
 
-class AjaxController extends Controller {
+class Ajax extends Controller {
     
-    public function handle($module, $action) {
+    public function handle($module, $action = null) {
         $this->requireAuth();
         
         // Set JSON header
@@ -65,6 +65,14 @@ class AjaxController extends Controller {
             $db = Database::getInstance();
             $userId = Auth::getUserId();
             
+            if (!$userId) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Usuario no autenticado'
+                ]);
+                exit;
+            }
+            
             $sql = "SELECT id, username, email, nombre, apellidos, rol, ultimo_acceso, fecha_creacion 
                     FROM usuarios WHERE id = ?";
             $stmt = $db->prepare($sql);
@@ -75,25 +83,35 @@ class AjaxController extends Controller {
                 // Formatear fechas para mejor legibilidad
                 if ($user['ultimo_acceso']) {
                     $user['ultimo_acceso'] = date('d/m/Y H:i:s', strtotime($user['ultimo_acceso']));
+                } else {
+                    $user['ultimo_acceso'] = 'Nunca';
                 }
                 if ($user['fecha_creacion']) {
                     $user['fecha_creacion'] = date('d/m/Y', strtotime($user['fecha_creacion']));
+                } else {
+                    $user['fecha_creacion'] = 'N/A';
                 }
                 
                 echo json_encode([
                     'success' => true,
-                    'user' => $user
+                    'user' => $user,
+                    'debug' => 'Datos obtenidos correctamente'
                 ]);
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Usuario no encontrado'
+                    'message' => 'Usuario no encontrado en la base de datos',
+                    'debug' => 'UserID: ' . $userId
                 ]);
             }
         } catch (Exception $e) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Error al obtener datos del usuario: ' . $e->getMessage()
+                'message' => 'Error al obtener datos del usuario: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
             ]);
         }
         exit;
