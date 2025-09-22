@@ -40,15 +40,92 @@
         
         .sidebar .nav-link {
             color: var(--dark-color);
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin: 2px 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         
-        .sidebar .nav-link:hover,
+        .sidebar .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        .sidebar .nav-link:hover::before {
+            width: 100%;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: rgba(46, 139, 87, 0.1);
+            color: var(--primary-color);
+            transform: translateX(3px);
+            transition: all 0.3s ease;
+        }
+        
         .sidebar .nav-link.active {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), #20704a);
             color: white;
+            font-weight: 600;
+            border-left: 4px solid var(--secondary-color);
+            box-shadow: 0 2px 8px rgba(46, 139, 87, 0.3);
+        }
+        
+        .sidebar .nav-link.active i {
+            color: var(--secondary-color);
+        }
+        
+        .sidebar .nav-link.sub-active {
+            background-color: rgba(46, 139, 87, 0.15);
+            color: var(--primary-color);
+            font-weight: 500;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        /* Indicador de sección activa en el sidebar */
+        .sidebar {
+            position: relative;
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            opacity: 0.3;
+        }
+        
+        /* Animación para los iconos */
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar .nav-link.active i,
+        .sidebar .nav-link:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* Breadcrumb personalizado */
+        .content-wrapper::before {
+            content: '';
+            display: block;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            margin-bottom: 20px;
         }
         
         .card-stats {
@@ -292,63 +369,63 @@
             <div class="col-md-2 col-lg-2 px-0">
                 <div class="sidebar">
                     <nav class="nav flex-column p-3">
-                        <a class="nav-link" href="<?= $this->url('dashboard') ?>">
+                        <a class="nav-link" href="<?= $this->url('dashboard') ?>" data-menu="dashboard">
                             <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
                         
                         <hr class="my-2">
                         
-                        <a class="nav-link" href="<?= $this->url('produccion') ?>">
+                        <a class="nav-link" href="<?= $this->url('produccion') ?>" data-menu="produccion">
                             <i class="fas fa-industry"></i> Producción
                         </a>
-                        <a class="nav-link ms-3" href="<?= $this->url('produccion/recetas') ?>">
+                        <a class="nav-link ms-3" href="<?= $this->url('produccion/recetas') ?>" data-menu="produccion-recetas">
                             <i class="fas fa-book"></i> Recetas
                         </a>
-                        <a class="nav-link ms-3" href="<?= $this->url('produccion/lotes') ?>">
+                        <a class="nav-link ms-3" href="<?= $this->url('produccion/lotes') ?>" data-menu="produccion-lotes">
                             <i class="fas fa-boxes"></i> Lotes
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('materias-primas') ?>">
+                        <a class="nav-link" href="<?= $this->url('materias-primas') ?>" data-menu="materias-primas">
                             <i class="fas fa-seedling"></i> Materias Primas
                         </a>
-                        <a class="nav-link ms-3" href="<?= $this->url('materias-primas/proveedores') ?>">
+                        <a class="nav-link ms-3" href="<?= $this->url('materias-primas/proveedores') ?>" data-menu="materias-primas-proveedores">
                             <i class="fas fa-truck"></i> Proveedores
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('calidad') ?>">
+                        <a class="nav-link" href="<?= $this->url('calidad') ?>" data-menu="calidad">
                             <i class="fas fa-award"></i> Calidad
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('inventario') ?>">
+                        <a class="nav-link" href="<?= $this->url('inventario') ?>" data-menu="inventario">
                             <i class="fas fa-warehouse"></i> Inventario
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('ventas') ?>">
+                        <a class="nav-link" href="<?= $this->url('ventas') ?>" data-menu="ventas">
                             <i class="fas fa-shopping-cart"></i> Ventas
                         </a>
-                        <a class="nav-link ms-3" href="<?= $this->url('ventas/clientes') ?>">
+                        <a class="nav-link ms-3" href="<?= $this->url('ventas/clientes') ?>" data-menu="ventas-clientes">
                             <i class="fas fa-users"></i> Clientes
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('compras') ?>">
+                        <a class="nav-link" href="<?= $this->url('compras') ?>" data-menu="compras">
                             <i class="fas fa-shopping-bag"></i> Compras
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('finanzas') ?>">
+                        <a class="nav-link" href="<?= $this->url('finanzas') ?>" data-menu="finanzas">
                             <i class="fas fa-chart-line"></i> Finanzas
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('rrhh') ?>">
+                        <a class="nav-link" href="<?= $this->url('rrhh') ?>" data-menu="rrhh">
                             <i class="fas fa-users-cog"></i> RRHH
                         </a>
                         
-                        <a class="nav-link" href="<?= $this->url('reportes') ?>">
+                        <a class="nav-link" href="<?= $this->url('reportes') ?>" data-menu="reportes">
                             <i class="fas fa-chart-bar"></i> Reportes
                         </a>
                         
                         <?php if (Auth::hasRole('admin')): ?>
                         <hr class="my-2">
-                        <a class="nav-link" href="<?= $this->url('admin') ?>">
+                        <a class="nav-link" href="<?= $this->url('admin') ?>" data-menu="admin">
                             <i class="fas fa-cogs"></i> Administración
                         </a>
                         <?php endif; ?>
@@ -506,11 +583,57 @@
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
             
+            // Limpiar estados activos previos
             navLinks.forEach(link => {
-                if (currentPath.includes(link.getAttribute('href'))) {
-                    link.classList.add('active');
-                }
+                link.classList.remove('active', 'sub-active');
             });
+            
+            // Mapeo de rutas a elementos del menú
+            const routeMapping = {
+                '/dashboard': 'dashboard',
+                '/produccion': 'produccion',
+                '/produccion/recetas': 'produccion-recetas',
+                '/produccion/lotes': 'produccion-lotes',
+                '/materias-primas': 'materias-primas',
+                '/materias-primas/proveedores': 'materias-primas-proveedores',
+                '/calidad': 'calidad',
+                '/inventario': 'inventario',
+                '/ventas': 'ventas',
+                '/ventas/clientes': 'ventas-clientes',
+                '/compras': 'compras',
+                '/finanzas': 'finanzas',
+                '/rrhh': 'rrhh',
+                '/reportes': 'reportes',
+                '/admin': 'admin'
+            };
+            
+            // Encontrar coincidencia exacta o la más específica
+            let activeRoute = null;
+            let maxMatch = 0;
+            
+            for (const [route, id] of Object.entries(routeMapping)) {
+                if (currentPath.includes(route) && route.length > maxMatch) {
+                    activeRoute = id;
+                    maxMatch = route.length;
+                }
+            }
+            
+            if (activeRoute) {
+                // Activar el enlace específico
+                const activeLink = document.querySelector(`[data-menu="${activeRoute}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                    
+                    // Si es una subsección, también marcar la sección padre
+                    const parentSection = activeRoute.split('-')[0];
+                    if (activeRoute.includes('-') && parentSection) {
+                        const parentLink = document.querySelector(`[data-menu="${parentSection}"]`);
+                        if (parentLink && !parentLink.classList.contains('active')) {
+                            parentLink.classList.add('sub-active');
+                        }
+                    }
+                }
+            }
         });
         
         // Confirmación para eliminar
