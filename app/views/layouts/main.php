@@ -501,76 +501,315 @@
     
     <!-- Custom JS -->
     <script>
-        // Activar link del menú actual
+        // Variables globales
+        let isLoading = false;
+        
+        // Inicialización cuando el DOM está listo
         document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+        
+        function initializeApp() {
+            activateCurrentNavLink();
+            setupNavigationEffects();
+            setupLoadingStates();
+            setupFormEnhancements();
+            setupAutoHideAlerts();
+            addPageTransition();
+        }
+        
+        // Activar link del menú actual
+        function activateCurrentNavLink() {
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.sidebar .nav-link');
             
             navLinks.forEach(link => {
-                if (currentPath.includes(link.getAttribute('href'))) {
+                link.classList.remove('active');
+                const linkPath = link.getAttribute('href');
+                if (linkPath && currentPath.includes(linkPath) && linkPath !== '/') {
                     link.classList.add('active');
                 }
             });
-        });
-        
-        // Confirmación para eliminar
-        function confirmarEliminacion(mensaje = '¿Está seguro de que desea eliminar este elemento?') {
-            return confirm(mensaje);
+            
+            // Activar dashboard si estamos en la raíz
+            if (currentPath === '/' || currentPath === '/dashboard') {
+                const dashboardLink = document.querySelector('a[href*="dashboard"]');
+                if (dashboardLink) {
+                    dashboardLink.classList.add('active');
+                }
+            }
         }
         
-        // Loading state para formularios
-        function showLoading(button) {
+        // Configurar efectos de navegación
+        function setupNavigationEffects() {
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!this.getAttribute('href').startsWith('#')) {
+                        showPageLoading();
+                    }
+                });
+            });
+        }
+        
+        // Estados de carga para páginas
+        function showPageLoading() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const overlay = createLoadingOverlay();
+            document.body.appendChild(overlay);
+            
+            setTimeout(() => {
+                overlay.classList.add('show');
+            }, 10);
+            
+            // Auto-hide después de 3 segundos por si acaso
+            setTimeout(() => {
+                hidePageLoading();
+            }, 3000);
+        }
+        
+        function hidePageLoading() {
+            isLoading = false;
+            const overlay = document.querySelector('.loading-overlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+                setTimeout(() => {
+                    overlay.remove();
+                }, 300);
+            }
+        }
+        
+        function createLoadingOverlay() {
+            const overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="text-center">
+                    <div class="loading-spinner"></div>
+                    <div class="mt-3">
+                        <strong>Cargando...</strong>
+                    </div>
+                </div>
+            `;
+            return overlay;
+        }
+        
+        // Configurar estados de carga para formularios y botones
+        function setupLoadingStates() {
+            // Para formularios
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"], input[type="submit"]');
+                    if (submitBtn && !submitBtn.classList.contains('no-loading')) {
+                        showButtonLoading(submitBtn);
+                    }
+                });
+            });
+            
+            // Para botones con data-loading
+            const loadingButtons = document.querySelectorAll('[data-loading]');
+            loadingButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showButtonLoading(this);
+                });
+            });
+        }
+        
+        function showButtonLoading(button, text = 'Procesando...') {
+            if (button.classList.contains('loading')) return;
+            
+            button.classList.add('loading');
             button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            button.dataset.originalText = button.innerHTML;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
         }
         
-        // Auto-hide alerts
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                if (alert.classList.contains('alert-success') || alert.classList.contains('alert-info')) {
-                    alert.style.transition = 'opacity 0.5s';
-                    alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 500);
+        function hideButtonLoading(button) {
+            button.classList.remove('loading');
+            button.disabled = false;
+            if (button.dataset.originalText) {
+                button.innerHTML = button.dataset.originalText;
+                delete button.dataset.originalText;
+            }
+        }
+        
+        // Mejorar formularios
+        function setupFormEnhancements() {
+            // Auto-focus en el primer campo de formularios
+            const firstInput = document.querySelector('form input:not([type="hidden"]):not([disabled])');
+            if (firstInput) {
+                firstInput.focus();
+            }
+            
+            // Validación en tiempo real para campos requeridos
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+            requiredFields.forEach(field => {
+                field.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                
+                field.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid')) {
+                        validateField(this);
+                    }
+                });
+            });
+        }
+        
+        function validateField(field) {
+            const isValid = field.checkValidity();
+            field.classList.toggle('is-invalid', !isValid);
+            field.classList.toggle('is-valid', isValid);
+            
+            // Mostrar/ocultar mensaje de error personalizado
+            let errorDiv = field.parentNode.querySelector('.invalid-feedback');
+            if (!isValid && !errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = field.validationMessage;
+                field.parentNode.appendChild(errorDiv);
+            } else if (isValid && errorDiv) {
+                errorDiv.remove();
+            }
+        }
+        
+        // Auto-hide alerts mejorado
+        function setupAutoHideAlerts() {
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    if (alert.classList.contains('alert-success') || alert.classList.contains('alert-info')) {
+                        hideAlert(alert);
+                    }
+                });
+            }, 5000);
+        }
+        
+        function hideAlert(alert) {
+            alert.style.transition = 'opacity 0.5s, transform 0.5s';
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 500);
+        }
+        
+        // Agregar transición de página
+        function addPageTransition() {
+            const contentWrapper = document.querySelector('.content-wrapper');
+            if (contentWrapper) {
+                contentWrapper.classList.add('page-transition');
+            }
+        }
+        
+        // Confirmación para eliminar mejorada
+        function confirmarEliminacion(mensaje = '¿Está seguro de que desea eliminar este elemento?', titulo = 'Confirmar eliminación') {
+            return new Promise((resolve) => {
+                if (window.confirm(`${titulo}\n\n${mensaje}\n\nEsta acción no se puede deshacer.`)) {
+                    resolve(true);
+                } else {
+                    resolve(false);
                 }
             });
-        }, 5000);
-        
-        // Función para abrir el modal de perfil
-        function openProfileModal() {
-            // Obtener datos del usuario actual del servidor
-            fetch('<?= BASE_URL ?>/test_ajax.php?endpoint=profile')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Llenar campos del formulario
-                        document.getElementById('profile_nombre').value = data.user.nombre || '';
-                        document.getElementById('profile_apellidos').value = data.user.apellidos || '';
-                        document.getElementById('profile_username').value = data.user.username || '';
-                        document.getElementById('profile_email').value = data.user.email || '';
-                        document.getElementById('profile_rol').value = data.user.rol || '';
-                        document.getElementById('profile_ultimo_acceso').value = data.user.ultimo_acceso || 'Nunca';
-                        
-                        // Actualizar información del avatar
-                        document.getElementById('profile_fullname').textContent = 
-                            (data.user.nombre || '') + ' ' + (data.user.apellidos || '');
-                        document.getElementById('profile_role_badge').textContent = 
-                            (data.user.rol || 'Usuario').charAt(0).toUpperCase() + (data.user.rol || 'Usuario').slice(1);
-                        document.getElementById('profile_member_since').textContent = 
-                            formatDate(data.user.fecha_creacion);
-                        
-                        // Mostrar modal
-                        const modal = new bootstrap.Modal(document.getElementById('profileModal'));
-                        modal.show();
-                    } else {
-                        alert('Error al cargar los datos del perfil: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error de conexión al cargar el perfil');
-                });
         }
+        
+        // Utilidades adicionales
+        function formatDate(dateString) {
+            if (!dateString) return 'No disponible';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        function formatMoney(amount, currency = '$') {
+            if (isNaN(amount)) return currency + '0.00';
+            return currency + parseFloat(amount).toLocaleString('es-ES', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // Función para mostrar notificaciones toast
+        function showToast(message, type = 'info', duration = 3000) {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} toast-notification`;
+            toast.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${getToastIcon(type)} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
+                </div>
+            `;
+            
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                hideAlert(toast);
+            }, duration);
+        }
+        
+        function getToastIcon(type) {
+            const icons = {
+                'success': 'check-circle',
+                'danger': 'exclamation-triangle',
+                'warning': 'exclamation-circle',
+                'info': 'info-circle',
+                'primary': 'bell'
+            };
+            return icons[type] || 'info-circle';
+        }
+        
+        // Evento cuando la página se ha cargado completamente
+        window.addEventListener('load', function() {
+            hidePageLoading();
+        });
+        
+        // Función para abrir el modal de perfil (mantenida por compatibilidad)
+        function openProfileModal() {
+            showToast('Funcionalidad de perfil en desarrollo', 'info');
+        }
+    </script>
+    
+    <!-- Estilos adicionales para animaciones -->
+    <style>
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .toast-notification {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: none;
+            border-radius: 10px;
+        }
+    </style>
         
         // Manejar cambio de contraseña
         document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
