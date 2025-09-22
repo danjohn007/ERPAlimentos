@@ -299,7 +299,7 @@ class VentasController extends Controller {
                 'estado' => 'pendiente'
             ];
             
-            $ordenId = $ordenModel->insert($datosOrden);
+            $ordenId = $ordenModel->create($datosOrden);
             
             if ($ordenId && isset($_POST['detalles'])) {
                 $this->procesarDetallesOrden($ordenId, $_POST['detalles']);
@@ -326,6 +326,8 @@ class VentasController extends Controller {
     }
     
     private function procesarDetallesOrden($ordenId, $detalles) {
+        $ordenModel = new OrdenVenta();
+        
         foreach ($detalles as $detalle) {
             if (empty($detalle['producto_id']) || empty($detalle['cantidad'])) {
                 continue;
@@ -345,11 +347,7 @@ class VentasController extends Controller {
                 'observaciones' => $detalle['observaciones'] ?? ''
             ];
             
-            $this->db->query(
-                "INSERT INTO orden_venta_detalles (orden_venta_id, producto_id, cantidad, precio_unitario, descuento, subtotal, observaciones) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?)",
-                array_values($datosDetalle)
-            );
+            $ordenModel->insertarDetalle($datosDetalle);
         }
     }
     

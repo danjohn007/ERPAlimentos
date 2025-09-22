@@ -97,4 +97,14 @@ class OrdenVenta extends Model {
         }
         return $this->update($id, $data);
     }
+    
+    /**
+     * Insertar detalle de orden
+     */
+    public function insertarDetalle($datosDetalle) {
+        $sql = "INSERT INTO orden_venta_detalles (orden_venta_id, producto_id, cantidad, precio_unitario, descuento, subtotal, observaciones) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(array_values($datosDetalle));
+    }
 }
