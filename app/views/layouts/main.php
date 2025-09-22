@@ -40,43 +40,23 @@
         
         .sidebar .nav-link {
             color: var(--dark-color);
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin: 3px 0;
-            transition: all 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 2px 0;
+            transition: all 0.2s ease;
             position: relative;
-            overflow: hidden;
-        }
-        
-        .sidebar .nav-link::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 0;
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), transparent);
-            transition: width 0.3s ease;
-            z-index: -1;
-        }
-        
-        .sidebar .nav-link:hover::before {
-            width: 100%;
         }
         
         .sidebar .nav-link:hover {
-            background-color: rgba(46, 139, 87, 0.1);
+            background-color: rgba(46, 139, 87, 0.08);
             color: var(--primary-color);
-            transform: translateX(3px);
-            transition: all 0.3s ease;
         }
         
         .sidebar .nav-link.active {
-            background: linear-gradient(135deg, var(--primary-color), #20704a);
+            background-color: var(--primary-color);
             color: white;
-            font-weight: 600;
-            border-left: 4px solid var(--secondary-color);
-            box-shadow: 0 2px 8px rgba(46, 139, 87, 0.3);
+            font-weight: 500;
+            border-left: 3px solid var(--secondary-color);
         }
         
         .sidebar .nav-link.active i {
@@ -84,10 +64,10 @@
         }
         
         .sidebar .nav-link.sub-active {
-            background-color: rgba(46, 139, 87, 0.15);
+            background-color: rgba(46, 139, 87, 0.1);
             color: var(--primary-color);
-            font-weight: 500;
-            border-left: 3px solid var(--primary-color);
+            font-weight: 400;
+            border-left: 2px solid var(--primary-color);
         }
         
         /* Indicador de sección activa en el sidebar */
@@ -95,64 +75,49 @@
             position: relative;
         }
         
-        .sidebar::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
-            opacity: 0.3;
-        }
-        
         /* Animación para los iconos */
         .sidebar .nav-link i {
             margin-right: 10px;
-            transition: transform 0.3s ease;
+            transition: all 0.2s ease;
             width: 20px;
             text-align: center;
-        }
-        
-        .sidebar .nav-link.active i,
-        .sidebar .nav-link:hover i {
-            transform: scale(1.1);
         }
         
         /* Breadcrumb personalizado */
         .content-wrapper::before {
             content: '';
             display: block;
-            height: 2px;
+            height: 1px;
             background: linear-gradient(90deg, var(--primary-color), transparent);
             margin-bottom: 20px;
         }
         
         /* Estilos personalizados para breadcrumbs estilo botón */
         .custom-breadcrumb {
-            background-color: #f8f9fa;
-            border-radius: 25px;
-            padding: 10px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 8px 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
         }
 
         .breadcrumb-btn {
-            border-radius: 20px !important;
-            transition: all 0.3s ease;
+            border-radius: 6px !important;
+            transition: all 0.2s ease;
             text-decoration: none !important;
-            margin: 0 5px;
-            font-weight: 500;
-            border-width: 2px;
+            margin: 0 3px;
+            font-weight: 400;
+            border-width: 1px;
             display: inline-block;
-            padding: 0.375rem 0.75rem;
+            padding: 0.25rem 0.5rem;
             font-size: 0.875rem;
             line-height: 1.5;
             text-align: center;
         }
 
         .breadcrumb-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: none;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
             text-decoration: none;
         }
 
@@ -175,11 +140,11 @@
         }
 
         .breadcrumb-item::before {
-            content: "→";
+            content: "/";
             color: #6c757d;
-            font-weight: bold;
-            margin: 0 10px;
-            font-size: 1.1rem;
+            font-weight: normal;
+            margin: 0 8px;
+            font-size: 0.9rem;
         }
 
         .breadcrumb-item:first-child::before {
@@ -195,68 +160,52 @@
         
         /* Estilos para botones de acción (btn-block mejorados) */
         .action-buttons .btn-block {
-            border-radius: 25px;
-            padding: 12px 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border-width: 2px;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-width: 1px;
             position: relative;
-            overflow: hidden;
-        }
-        
-        .action-buttons .btn-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-        
-        .action-buttons .btn-block:hover::before {
-            left: 100%;
         }
         
         .action-buttons .btn-block:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .action-buttons .btn-primary:hover {
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background-color: #0056b3;
         }
         
         .action-buttons .btn-info:hover {
-            background: linear-gradient(135deg, #17a2b8, #138496);
+            background-color: #138496;
         }
         
         .action-buttons .btn-success:hover {
-            background: linear-gradient(135deg, #28a745, #1e7e34);
+            background-color: #1e7e34;
         }
         
         .action-buttons .btn-warning:hover {
-            background: linear-gradient(135deg, #ffc107, #e0a800);
+            background-color: #e0a800;
         }
         
         .action-buttons .btn-danger:hover {
-            background: linear-gradient(135deg, #dc3545, #c82333);
+            background-color: #c82333;
         }
         
         .action-buttons .btn-secondary:hover {
-            background: linear-gradient(135deg, #6c757d, #5a6268);
+            background-color: #5a6268;
         }
         
         /* Responsive para móviles */
         @media (max-width: 768px) {
             .custom-breadcrumb {
-                padding: 8px 15px;
+                padding: 6px 12px;
             }
             
             .breadcrumb-btn {
                 font-size: 0.8rem;
-                padding: 0.25rem 0.5rem;
+                padding: 0.2rem 0.4rem;
                 margin: 0 2px;
             }
             
@@ -265,7 +214,7 @@
             }
             
             .action-buttons .btn-block {
-                padding: 10px 15px;
+                padding: 8px 12px;
                 font-size: 0.9rem;
             }
         }
@@ -327,19 +276,18 @@
         
         /* Estilos para el menú de usuario */
         .user-dropdown .user-menu {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: #f8f9fa;
             border: 1px solid #dee2e6;
-            border-radius: 25px;
+            border-radius: 8px;
             padding: 8px 15px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
             color: var(--dark-color) !important;
         }
         
         .user-dropdown .user-menu:hover {
-            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transform: translateY(-1px);
+            background: #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .user-avatar {
@@ -374,18 +322,18 @@
         
         .user-dropdown-menu {
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             padding: 0;
             min-width: 280px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         
         .user-dropdown-menu .dropdown-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #246447 100%);
+            background: var(--primary-color);
             color: white;
             padding: 15px 20px;
-            border-radius: 15px 15px 0 0;
+            border-radius: 8px 8px 0 0;
             margin: 0;
         }
         
@@ -402,13 +350,12 @@
         
         .user-dropdown-menu .dropdown-item {
             padding: 12px 20px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             border-radius: 0;
         }
         
         .user-dropdown-menu .dropdown-item:hover {
             background-color: #f8f9fa;
-            padding-left: 25px;
         }
         
         .user-dropdown-menu .dropdown-item i {
@@ -419,7 +366,7 @@
         }
         
         .user-dropdown-menu .logout-item {
-            border-radius: 0 0 15px 15px;
+            border-radius: 0 0 8px 8px;
         }
         
         .user-dropdown-menu .logout-item:hover {
