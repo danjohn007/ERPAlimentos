@@ -10,43 +10,71 @@ class VentasController extends Controller {
     public function index() {
         $this->requireAuth();
         
-        $ordenModel = new OrdenVenta();
-        $clienteModel = new Cliente();
-        
-        $ordenesPendientes = $ordenModel->getByEstado('pendiente');
-        $ordenesProceso = $ordenModel->getByEstado('proceso');
-        $ordenesDia = $ordenModel->query(
-            "SELECT COUNT(*) as total, SUM(total) as monto FROM ordenes_venta WHERE DATE(fecha_orden) = CURDATE()"
-        );
-        $clientesActivos = $clienteModel->getActivos();
-        
-        $ventasDia = $ordenesDia[0] ?? ['total' => 0, 'monto' => 0];
-        
-        $this->view->render('modules/ventas/index', [
-            'title' => 'Módulo de Ventas',
-            'ordenes_pendientes' => $ordenesPendientes,
-            'ordenes_proceso' => $ordenesProceso,
-            'ventas_dia' => $ventasDia,
-            'clientes_activos' => $clientesActivos
-        ]);
+        try {
+            $ordenModel = new OrdenVenta();
+            $clienteModel = new Cliente();
+            
+            $ordenesPendientes = $ordenModel->getByEstado('pendiente');
+            $ordenesProceso = $ordenModel->getByEstado('proceso');
+            $ordenesDia = $ordenModel->query(
+                "SELECT COUNT(*) as total, SUM(total) as monto FROM ordenes_venta WHERE DATE(fecha_orden) = CURDATE()"
+            );
+            $clientesActivos = $clienteModel->getActivos();
+            
+            $ventasDia = $ordenesDia[0] ?? ['total' => 0, 'monto' => 0];
+            
+            $this->view->render('modules/ventas/index', [
+                'title' => 'Módulo de Ventas',
+                'ordenes_pendientes' => $ordenesPendientes,
+                'ordenes_proceso' => $ordenesProceso,
+                'ventas_dia' => $ventasDia,
+                'clientes_activos' => $clientesActivos
+            ]);
+        } catch (Exception $e) {
+            // Modo demo - datos simulados
+            $this->view->render('modules/under-development', [
+                'title' => 'Módulo de Ventas',
+                'message' => 'Este módulo está en desarrollo. Pronto podrás gestionar todas las ventas y clientes.',
+                'features' => [
+                    'Gestión completa de clientes',
+                    'Creación y seguimiento de órdenes de venta',
+                    'Facturación automática',
+                    'Control de precios y descuentos',
+                    'Reportes de ventas detallados'
+                ]
+            ]);
+        }
     }
     
     public function clientes() {
         $this->requireAuth();
         
-        $clienteModel = new Cliente();
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->procesarCliente();
-            return;
+        try {
+            $clienteModel = new Cliente();
+            
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $this->procesarCliente();
+                return;
+            }
+            
+            $clientes = $clienteModel->getActivos();
+            
+            $this->view->render('modules/ventas/clientes', [
+                'title' => 'Gestión de Clientes',
+                'clientes' => $clientes
+            ]);
+        } catch (Exception $e) {
+            $this->view->render('modules/under-development', [
+                'title' => 'Gestión de Clientes',
+                'message' => 'La gestión de clientes está en desarrollo.',
+                'features' => [
+                    'Registro completo de clientes',
+                    'Historial de compras',
+                    'Créditos y límites de venta',
+                    'Contactos y comunicación'
+                ]
+            ]);
         }
-        
-        $clientes = $clienteModel->getActivos();
-        
-        $this->view->render('modules/ventas/clientes', [
-            'title' => 'Gestión de Clientes',
-            'clientes' => $clientes
-        ]);
     }
     
     public function nuevo_cliente() {

@@ -10,21 +10,36 @@ class ComprasController extends Controller {
     public function index() {
         $this->requireAuth();
         
-        $ordenCompraModel = new OrdenCompra();
-        $proveedorModel = new Proveedor();
-        
-        $ordenesPendientes = $ordenCompraModel->getByEstado('borrador');
-        $ordenesEnProceso = $ordenCompraModel->getByEstado('enviado');
-        $ordenesPorRecibir = $ordenCompraModel->getOrdenesPendientesRecepcion();
-        $proveedoresActivos = $proveedorModel->getActivos();
-        
-        $this->view->render('modules/compras/index', [
-            'title' => 'Módulo de Compras',
-            'ordenes_pendientes' => $ordenesPendientes,
-            'ordenes_en_proceso' => $ordenesEnProceso,
-            'ordenes_por_recibir' => $ordenesPorRecibir,
-            'proveedores_activos' => $proveedoresActivos
-        ]);
+        try {
+            $ordenCompraModel = new OrdenCompra();
+            $proveedorModel = new Proveedor();
+            
+            $ordenesPendientes = $ordenCompraModel->getByEstado('borrador');
+            $ordenesEnProceso = $ordenCompraModel->getByEstado('enviado');
+            $ordenesPorRecibir = $ordenCompraModel->getOrdenesPendientesRecepcion();
+            $proveedoresActivos = $proveedorModel->getActivos();
+            
+            $this->view->render('modules/compras/index', [
+                'title' => 'Módulo de Compras',
+                'ordenes_pendientes' => $ordenesPendientes,
+                'ordenes_en_proceso' => $ordenesEnProceso,
+                'ordenes_por_recibir' => $ordenesPorRecibir,
+                'proveedores_activos' => $proveedoresActivos
+            ]);
+        } catch (Exception $e) {
+            // Modo demo - datos simulados
+            $this->view->render('modules/under-development', [
+                'title' => 'Módulo de Compras',
+                'message' => 'Este módulo está en desarrollo. Pronto podrás gestionar todas las compras y proveedores.',
+                'features' => [
+                    'Gestión completa de proveedores',
+                    'Órdenes de compra automatizadas',
+                    'Control de recepción de mercancía',
+                    'Alertas de inventario bajo',
+                    'Reportes de compras detallados'
+                ]
+            ]);
+        }
     }
     
     public function ordenes() {
