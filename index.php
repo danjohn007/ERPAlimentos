@@ -133,7 +133,7 @@ $router->addRoute('admin/usuarios', 'Admin', 'usuarios');
 $router->addRoute('admin/configuracion', 'Admin', 'configuracion');
 
 // AJAX Routes
-$router->addRoute('ajax/([^/]+)/([^/]+)', 'Ajax', 'handle');
+$router->addRoute('ajax/([^/]+)/([^/]+)', 'AjaxController', 'handle');
 
 // Manejar la solicitud
 try {

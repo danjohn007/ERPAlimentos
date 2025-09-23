@@ -13,18 +13,69 @@ class ProduccionController extends Controller {
         // Obtener estadísticas de producción
         $loteModel = new LoteProduccion();
         $recetaModel = new Receta();
+        $materiaPrimaModel = new MateriaPrima();
         
-        $lotesProgramados = $loteModel->getLotesProgramados();
-        $lotesEnProceso = $loteModel->getLotesEnProceso();
+        // Estadísticas principales usando métodos del modelo
+        $lotesProgramados = $loteModel->findBy('estado', 'programado');
+        $lotesEnProceso = $loteModel->findBy('estado', 'en_proceso');
         $lotesEnMaduracion = $loteModel->getLotesEnMaduracion();
-        $recetasActivas = $recetaModel->getRecetasConProducto();
+        $recetasActivas = $recetaModel->findBy('estado', 'activo');
+        
+        // Contar por categorías
+        $lotes_programados_count = count($lotesProgramados);
+        $lotes_proceso_count = count($lotesEnProceso);
+        $lotes_maduracion_count = count($lotesEnMaduracion);
+        $recetas_count = count($recetasActivas);
+        
+        // Lotes de hoy
+        $hoy = date('Y-m-d');
+        $lotes_hoy_count = $loteModel->count("DATE(fecha_inicio) = ?", [$hoy]);
+        
+        // Lotes listos (terminados recientemente)
+        $fecha_limite = date('Y-m-d', strtotime('-7 days'));
+        $lotes_listos_count = $loteModel->count("estado = 'terminado' AND DATE(fecha_fin) >= ?", [$fecha_limite]);
+        
+        // Obtener materias primas con stock bajo
+        $materias_stock_bajo = $materiaPrimaModel->query(
+            "SELECT * FROM materias_primas WHERE stock_actual <= stock_minimo AND estado = 'activo'"
+        );
+        
+        // Obtener alertas activas de producción
+        $alertas_produccion = $loteModel->query(
+            "SELECT * FROM alertas WHERE tipo = 'produccion' AND estado = 'activa' ORDER BY prioridad DESC LIMIT 5"
+        );
+        
+        // Obtener análisis de calidad recientes
+        $analisis_recientes = $loteModel->query(
+            "SELECT ac.*, lp.numero_lote FROM analisis_calidad ac 
+             LEFT JOIN lotes_produccion lp ON ac.lote_produccion_id = lp.id 
+             WHERE ac.fecha_analisis >= DATE_SUB(NOW(), INTERVAL 7 DAY) 
+             ORDER BY ac.fecha_analisis DESC LIMIT 5"
+        );
+        
+        // Obtener condiciones ambientales actuales (simuladas por ahora)
+        $condiciones_ambientales = [
+            'temperatura' => round(16 + (rand(-20, 20) / 10), 1),
+            'humedad' => rand(70, 85),
+            'ultima_lectura' => date('Y-m-d H:i:s')
+        ];
         
         $this->view->render('modules/produccion/index', [
             'title' => 'Módulo de Producción',
             'lotes_programados' => $lotesProgramados,
             'lotes_en_proceso' => $lotesEnProceso,
             'lotes_en_maduracion' => $lotesEnMaduracion,
-            'recetas_activas' => $recetasActivas
+            'recetas_activas' => $recetasActivas,
+            'lotes_programados_count' => $lotes_programados_count,
+            'lotes_proceso_count' => $lotes_proceso_count,
+            'lotes_maduracion_count' => $lotes_maduracion_count,
+            'recetas_count' => $recetas_count,
+            'lotes_hoy_count' => $lotes_hoy_count,
+            'lotes_listos_count' => $lotes_listos_count,
+            'materias_stock_bajo' => $materias_stock_bajo,
+            'alertas_produccion' => $alertas_produccion,
+            'analisis_recientes' => $analisis_recientes,
+            'condiciones_ambientales' => $condiciones_ambientales
         ]);
     }
     
@@ -60,8 +111,6 @@ class ProduccionController extends Controller {
         $this->requireAuth();
         
         $recetaModel = new Receta();
-        $usuarioModel = new Model();
-        $usuarioModel->table = 'usuarios';
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $loteModel = new LoteProduccion();
@@ -90,9 +139,11 @@ class ProduccionController extends Controller {
             }
         }
         
-        $recetas = $recetaModel->getRecetasConProducto();
-        $operadores = $usuarioModel->findBy('rol', 'operador');
-        $supervisores = $usuarioModel->findBy('rol', 'supervisor');
+        $recetas = $recetaModel->findBy('estado', 'activo');
+        
+        // Obtener operadores y supervisores usando consultas directas
+        $operadores = $loteModel->query("SELECT * FROM usuarios WHERE rol = 'operador' AND estado = 'activo'");
+        $supervisores = $loteModel->query("SELECT * FROM usuarios WHERE rol = 'supervisor' AND estado = 'activo'");
         
         $this->view->render('modules/produccion/crear-lote', [
             'title' => 'Crear Lote de Producción',
