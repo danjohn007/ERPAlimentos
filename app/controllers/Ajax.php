@@ -195,10 +195,15 @@ class Ajax extends Controller {
     }
     
     private function handleProduccion($action) {
-        return [
-            'success' => false,
-            'message' => "Funcionalidad de producción '$action' en desarrollo"
-        ];
+        switch ($action) {
+            case 'batch-quality-check':
+                return $this->performBatchQualityCheck();
+            default:
+                return [
+                    'success' => false,
+                    'message' => "Acción '$action' no implementada para producción"
+                ];
+        }
     }
     
     private function handleMateriasPrimas($action) {
@@ -248,5 +253,62 @@ class Ajax extends Controller {
             'success' => false,
             'message' => 'Funcionalidad de ajuste de inventario en desarrollo'
         ];
+    }
+    
+    private function performBatchQualityCheck() {
+        try {
+            $loteModel = new LoteProduccion();
+            $lotesEnProceso = $loteModel->getLotesEnProceso();
+            $lotesEnMaduracion = $loteModel->getLotesEnMaduracion();
+            
+            $attentionItems = [];
+            $needsAttention = false;
+            
+            // No hay lotes para revisar
+            if (empty($lotesEnProceso) && empty($lotesEnMaduracion)) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'needs_attention' => false,
+                        'message' => 'No hay lotes activos para revisar.',
+                        'attention_items' => []
+                    ]
+                ];
+            }
+            
+            // Verificar lotes en proceso (más de 24 horas)
+            foreach ($lotesEnProceso as $lote) {
+                if (isset($lote['fecha_inicio'])) {
+                    $hoursInProcess = floor((time() - strtotime($lote['fecha_inicio'])) / 3600);
+                    if ($hoursInProcess > 24) {
+                        $attentionItems[] = "Lote {$lote['numero_lote']}: {$hoursInProcess}h en proceso";
+                        $needsAttention = true;
+                    }
+                }
+            }
+            
+            // Verificar lotes próximos a terminar maduración
+            foreach ($lotesEnMaduracion as $lote) {
+                if (isset($lote['dias_restantes']) && $lote['dias_restantes'] <= 2) {
+                    $attentionItems[] = "Lote {$lote['numero_lote']}: {$lote['dias_restantes']} días para terminar";
+                    $needsAttention = true;
+                }
+            }
+            
+            return [
+                'success' => true,
+                'data' => [
+                    'needs_attention' => $needsAttention,
+                    'attention_items' => $attentionItems,
+                    'total_in_process' => count($lotesEnProceso),
+                    'total_maturing' => count($lotesEnMaduracion)
+                ]
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error al verificar lotes: ' . $e->getMessage()
+            ];
+        }
     }
 }
