@@ -264,21 +264,25 @@
 // Funciones para acciones rápidas de producción
 function checkRawMaterials() {
     // Verificar el estado de las materias primas críticas
-    fetch('/ajax/check-raw-materials')
+    fetch('<?= BASE_URL ?>/ajax/materias-primas/check-raw-materials')
         .then(response => response.json())
         .then(data => {
-            if (data.critical_low.length > 0) {
-                let message = `¡Atención! Materias primas con stock crítico:\n\n`;
-                data.critical_low.forEach(item => {
-                    message += `• ${item.nombre}: ${item.stock_actual} ${item.unidad_medida} (Mín: ${item.stock_minimo})\n`;
-                });
-                message += `\n¿Desea ir al módulo de Materias Primas?`;
-                
-                if (confirm(message)) {
-                    window.location.href = '/materias-primas';
+            if (data.success) {
+                if (data.data.critical_low.length > 0) {
+                    let message = `¡Atención! Materias primas con stock crítico:\n\n`;
+                    data.data.critical_low.forEach(item => {
+                        message += `• ${item.nombre}: ${item.stock_actual} ${item.unidad_medida} (Mín: ${item.stock_minimo})\n`;
+                    });
+                    message += `\n¿Desea ir al módulo de Materias Primas?`;
+                    
+                    if (confirm(message)) {
+                        window.location.href = '<?= BASE_URL ?>/materias-primas';
+                    }
+                } else {
+                    alert('✓ Todas las materias primas tienen stock suficiente para la producción.');
                 }
             } else {
-                alert('✓ Todas las materias primas tienen stock suficiente para la producción.');
+                alert('Error: ' + data.message);
             }
         })
         .catch(error => {
@@ -289,41 +293,30 @@ function checkRawMaterials() {
 
 function performBatchQualityCheck() {
     // Realizar verificación rápida de calidad de lotes activos
-    const lotesEnProceso = <?= json_encode($lotes_en_proceso) ?>;
-    const lotesEnMaduracion = <?= json_encode($lotes_en_maduracion) ?>;
-    
-    if (lotesEnProceso.length === 0 && lotesEnMaduracion.length === 0) {
-        alert('No hay lotes activos para revisar.');
-        return;
-    }
-    
-    let message = 'Lotes que requieren atención:\n\n';
-    let needsAttention = false;
-    
-    // Verificar lotes en proceso (más de 24 horas)
-    lotesEnProceso.forEach(lote => {
-        const hoursInProcess = Math.floor((new Date() - new Date(lote.fecha_inicio)) / (1000 * 60 * 60));
-        if (hoursInProcess > 24) {
-            message += `• Lote ${lote.numero_lote}: ${hoursInProcess}h en proceso\n`;
-            needsAttention = true;
-        }
-    });
-    
-    // Verificar lotes próximos a terminar maduración
-    lotesEnMaduracion.forEach(lote => {
-        if (lote.dias_restantes <= 2) {
-            message += `• Lote ${lote.numero_lote}: ${lote.dias_restantes} días para terminar\n`;
-            needsAttention = true;
-        }
-    });
-    
-    if (needsAttention) {
-        message += '\n¿Desea ir al módulo de Calidad?';
-        if (confirm(message)) {
-            window.location.href = '/calidad';
-        }
-    } else {
-        alert('✓ Todos los lotes están en estado normal.');
-    }
+    fetch('<?= BASE_URL ?>/ajax/produccion/batch-quality-check')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.data.needs_attention) {
+                    let message = 'Lotes que requieren atención:\n\n';
+                    data.data.attention_items.forEach(item => {
+                        message += `• ${item}\n`;
+                    });
+                    message += '\n¿Desea ir al módulo de Calidad?';
+                    
+                    if (confirm(message)) {
+                        window.location.href = '<?= BASE_URL ?>/calidad';
+                    }
+                } else {
+                    alert('✓ Todos los lotes están en estado normal.');
+                }
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error al verificar lotes. Por favor, verifique manualmente.');
+            console.error('Error:', error);
+        });
 }
 </script>
